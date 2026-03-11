@@ -54,6 +54,79 @@
 | `ech_enabled` | 是否开启 ECH 加密（绕过封锁的关键） |
 | `use_cf_pool` | 是否启用优选 IP 池平衡负载与稳定性 |
 
+## 服务端部署
+
+SniShaper 支持两种服务端部署方式：
+
+### 方式一：Cloudflare Worker (无成本)
+
+```text
+客户端 → Worker (免费/Serverless) → 目标网站
+```
+
+**部署步骤：**
+
+1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. 创建一个新的 Worker 服务
+3. 将 `sni-server/worker.js` 的内容复制到 Worker 编辑器
+4. 在 Worker 设置中添加环境变量 `AUTH_SECRET`，设置你的鉴权密码
+5. 部署 Worker，获取 Worker 域名（如 `proxy.xxx.workers.dev`）
+6. 在客户端配置中：
+   - 模式选择 `server`
+   - 服务器地址填写 `https://proxy.xxx.workers.dev`
+   - 鉴权 Token 填写上一步设置的密码
+
+**请求格式：**
+```
+https://proxy.xxx.workers.dev/{AUTH_SECRET}/{目标域名}/{路径}
+```
+
+### 方式二：VPS 部署 (sni-server)
+
+```text
+客户端 → VPS (sni-server) → 目标网站
+```
+
+**部署步骤：**
+
+1. 准备一台 VPS（任何支持 Go 的 Linux 服务器）
+2. 下载/编译 sni-server：
+
+```bash
+cd sni-server
+go build -o sni-server .
+```
+
+3. 运行一键部署脚本：
+
+```bash
+sudo bash install.sh
+```
+
+或手动运行：
+
+```bash
+./sni-server -port 443 -secret YOUR_AUTH_SECRET
+```
+
+4. 配置域名解析（使用 Cloudflare Tunnel 或手动绑定域名）
+5. 在客户端配置中填写 VPS 地址和鉴权 Token
+
+**请求格式：**
+```
+https://your-domain.com/{AUTH_SECRET}/{目标域名}/{路径}
+```
+
+### 对比
+
+| 特性 | Worker | VPS (sni-server) |
+|------|--------|------------------|
+| 成本 | 免费 | 需要 VPS |
+| 维护 | 无需 | 需要管理 |
+| 出口IP | Cloudflare IP | VPS IP |
+| 带宽限制 | 有 | 取决于 VPS |
+| 定制化 | 有限 | 完全控制 |
+
 ## 常见问题
 
 - **证书错误**：请确认证书已导入“受信任的根证书”分类，并务必重启浏览器。

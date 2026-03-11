@@ -95,17 +95,9 @@ sudo bash /tmp/sni-server-install.sh
 bash <(curl -sSL https://github.com/sky22333/shell/raw/main/dev/cf-tunnel.sh)
 ```
 
-4. 在客户端配置中填写 VPS 地址和鉴权密码
+4. 在客户端配置中填写 Tunnel给的域名和鉴权密码
 
-### 对比
 
-| 特性 | Worker | VPS (sni-server) |
-|------|--------|------------------|
-| 成本 | 免费 | 需要 VPS |
-| 维护 | 无需 | 需要管理 |
-| 出口 IP | Cloudflare IP | VPS IP |
-| 带宽限制 | 有 | 取决于 VPS |
-| 定制化 | 有限 | 完全控制 |
 
 ## 常见问题
 

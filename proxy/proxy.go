@@ -10,6 +10,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
@@ -61,6 +62,7 @@ type RuleManager struct {
 	serverHost       string
 	serverAuth       string
 	listenPort       string
+	echProfiles      []ECHProfile
 	mu               sync.RWMutex
 }
 
@@ -79,7 +81,8 @@ type SiteGroup struct {
 	UTLSPolicy    string   `json:"utls_policy,omitempty"`    // "", "auto", "on", "off"
 	Enabled       bool     `json:"enabled"`
 	ECHEnabled    bool     `json:"ech_enabled"`
-	ECHDomain     string   `json:"ech_domain"` // Domain used for ECH DoH lookup
+	ECHProfileID  string   `json:"ech_profile_id,omitempty"`
+	ECHDomain     string   `json:"ech_domain,omitempty"` // Domain used for ECH DoH lookup
 	UseCFPool     bool     `json:"use_cf_pool"`
 }
 
@@ -90,12 +93,22 @@ type Upstream struct {
 	Enabled bool   `json:"enabled"`
 }
 
+type ECHProfile struct {
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	Config          string `json:"config"`
+	DiscoveryDomain string `json:"discovery_domain,omitempty"`
+	DoHUpstream     string `json:"doh_upstream,omitempty"`
+	AutoUpdate      bool   `json:"auto_update,omitempty"`
+}
+
 type Config struct {
 	ListenPort       string           `json:"listen_port"`
 	ServerHost       string           `json:"server_host,omitempty"`
 	ServerAuth       string           `json:"server_auth,omitempty"`
 	SiteGroups       []SiteGroup      `json:"site_groups"`
 	Upstreams        []Upstream       `json:"upstreams"`
+	ECHProfiles      []ECHProfile     `json:"ech_profiles,omitempty"`
 	CloudflareConfig CloudflareConfig `json:"cloudflare_config"`
 }
 
@@ -106,17 +119,16 @@ type CloudflareConfig struct {
 	APIKey       string   `json:"api_key"`
 }
 
-
 type trackingListener struct {
 	net.Listener
 	proxy *ProxyServer
 }
 
 type singleConnListener struct {
-	conn      net.Conn
-	once      sync.Once
-	done      chan struct{}
-	doneOnce  sync.Once
+	conn     net.Conn
+	once     sync.Once
+	done     chan struct{}
+	doneOnce sync.Once
 }
 
 func (l *singleConnListener) Accept() (net.Conn, error) {
@@ -152,6 +164,7 @@ func (c *notifyCloseConn) Close() error {
 }
 
 type roundTripperFunc func(*http.Request) (*http.Response, error)
+
 func (f roundTripperFunc) RoundTrip(req *http.Request) (*http.Response, error) { return f(req) }
 
 func (l *trackingListener) Accept() (net.Conn, error) {
@@ -163,20 +176,25 @@ func (l *trackingListener) Accept() (net.Conn, error) {
 }
 
 type Rule struct {
-	Domain        string
-	Upstream      string
-	Upstreams     []string
-	Mode          string // "mitm", "transparent", "direct"
-	SniFake       string
-	ConnectPolicy string // "", "tunnel_origin", "tunnel_upstream", "mitm", "direct"
-	SniPolicy     string // "", "auto", "original", "fake", "upstream", "none"
-	AlpnPolicy    string // "", "auto", "h1_only", "h2_h1"
-	UTLSPolicy    string // "", "auto", "on", "off"
-	Enabled       bool
-	SiteID        string
-	ECHEnabled    bool
-	ECHDomain     string
-	UseCFPool     bool
+	Domain             string
+	Upstream           string
+	Upstreams          []string
+	Mode               string // "mitm", "transparent", "tls-rf", "direct"
+	SniFake            string
+	ConnectPolicy      string // "", "tunnel_origin", "tunnel_upstream", "mitm", "direct"
+	SniPolicy          string // "", "auto", "original", "fake", "upstream", "none"
+	AlpnPolicy         string // "", "auto", "h1_only", "h2_h1"
+	UTLSPolicy         string // "", "auto", "on", "off"
+	Enabled            bool
+	SiteID             string
+	ECHEnabled         bool
+	ECHProfileID       string
+	ECHDomain          string
+	UseCFPool          bool
+	ECHConfig          []byte
+	ECHDiscoveryDomain string
+	ECHDoHUpstream     string
+	ECHAutoUpdate      bool
 }
 
 func mergeRule(base, overlay Rule) Rule {
@@ -706,7 +724,7 @@ func (p *ProxyServer) GetListenAddr() string {
 
 func (p *ProxyServer) SetMode(mode string) error {
 	mode = strings.ToLower(strings.TrimSpace(mode))
-	if mode != "mitm" && mode != "transparent" {
+	if mode != "mitm" && mode != "transparent" && mode != "tls-rf" {
 		return fmt.Errorf("invalid proxy mode: %s", mode)
 	}
 	p.mu.Lock()
@@ -737,7 +755,7 @@ func (p *ProxyServer) Start() error {
 		WriteTimeout: 30 * time.Second,
 	}
 	listenAddr := p.listenAddr
-	
+
 	if p.cfPool != nil {
 		p.cfPool.Start()
 	}
@@ -789,7 +807,7 @@ func (p *ProxyServer) Stop() error {
 		return nil
 	}
 	p.running = false
-	
+
 	if p.cfPool != nil {
 		p.cfPool.Stop()
 	}
@@ -909,8 +927,8 @@ func (p *ProxyServer) handleConnect(w http.ResponseWriter, req *http.Request, ru
 	dialAddr := targetAddr
 	dialCandidates := []string{dialAddr}
 
-	// For MITM/transparent rules, upstream should be respected if configured.
-	if (effectiveMode == "mitm" || effectiveMode == "transparent") && strings.TrimSpace(resolvedUpstream) != "" {
+	// For MITM/transparent/tls-rf rules, upstream should be respected if configured.
+	if (effectiveMode == "mitm" || effectiveMode == "transparent" || effectiveMode == "tls-rf") && strings.TrimSpace(resolvedUpstream) != "" {
 		dialCandidates = splitUpstreamCandidates(targetHost, resolvedUpstream, "443")
 		if len(dialCandidates) == 0 {
 			dialCandidates = []string{targetAddr}
@@ -952,7 +970,7 @@ func (p *ProxyServer) handleConnect(w http.ResponseWriter, req *http.Request, ru
 			if err == nil {
 				dialAddr = addr
 				log.Printf("[Connect] Sequential dial success: %s", dialAddr)
-				
+
 				// 如果使用了 CF 优选池，回馈成功状态
 				if rule.UseCFPool && p.cfPool != nil {
 					host, _, _ := net.SplitHostPort(addr)
@@ -962,10 +980,10 @@ func (p *ProxyServer) handleConnect(w http.ResponseWriter, req *http.Request, ru
 				}
 				break
 			}
-			
+
 			log.Printf("[Connect] Connect failed to %s: %v", addr, err)
 			lastErr = err
-			
+
 			// 如果该候选节点连通失败，且来自于 CF 优选池，上报失败实施惩罚
 			if rule.UseCFPool && p.cfPool != nil {
 				host, _, _ := net.SplitHostPort(addr)
@@ -1023,9 +1041,12 @@ func (p *ProxyServer) handleConnect(w http.ResponseWriter, req *http.Request, ru
 	_ = conn.SetDeadline(time.Time{})
 
 	// 注意：不要在 hijack 后使用 defer，因为我们需要保持连接打开
-	if effectiveMode == "mitm" {
+	switch effectiveMode {
+	case "mitm":
 		p.handleMITM(clientConn, targetHost, rule, dialCandidates, dialAddr)
-	} else {
+	case "tls-rf":
+		p.handleTLSFragment(clientConn, conn, targetHost, rule)
+	default:
 		p.handleTransparent(clientConn, conn, targetHost, rule)
 	}
 }
@@ -1062,12 +1083,12 @@ func (p *ProxyServer) directConnect(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if _, err := rw.WriteString("HTTP/1.1 200 Connection Established\r\n\r\n"); err != nil {
-			clientConn.Close()
+		clientConn.Close()
 		conn.Close()
 		return
 	}
 	if err := rw.Flush(); err != nil {
-			clientConn.Close()
+		clientConn.Close()
 		conn.Close()
 		return
 	}
@@ -1316,7 +1337,7 @@ func (p *ProxyServer) generateCert(host string, caCert *x509.Certificate, caKey 
 	}
 
 	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: certDER})
-	
+
 	keyBytes, err := x509.MarshalECPrivateKey(privKey)
 	if err != nil {
 		return nil, err
@@ -1353,21 +1374,21 @@ func (r *RuleManager) matchRule(host, mode string) Rule {
 
 	host = normalizeHost(host)
 	mode = strings.ToLower(strings.TrimSpace(mode))
-	
+
 	best := Rule{}
 	bestScore := -1
 	for _, rule := range r.rules {
 		if !rule.Enabled {
 			continue
 		}
-		
+
 		score := domainMatchScore(host, rule.Domain)
 		if score >= 0 && score > bestScore {
 			best = rule
 			bestScore = score
 		}
 	}
-	
+
 	// 如果命中了特定规则
 	if bestScore >= 0 {
 		// [V2.9.4 特殊逻辑]：如果用户开启了全局“透传模式”，说明用户可能没装证书。
@@ -1380,10 +1401,11 @@ func (r *RuleManager) matchRule(host, mode string) Rule {
 		return best
 	}
 
-	// 如果没有命中任何特定规则，则使用全局模式作为默认策略
-	// 注意：如果全局模式是 "mitm" 或 "transparent"，则返回对应的基础 Rule
+	// 未命中任何特定规则时，必须走直连。
+	// 否则全局模式会把所有站点都带入 snishaper 处理链路。
+	log.Printf("[RuleMatch] No explicit rule matched for %s, fallback to DIRECT", host)
 	return Rule{
-		Mode:    mode,
+		Mode:    "direct",
 		Enabled: true,
 	}
 }
@@ -1412,6 +1434,68 @@ func NewRuleManager(configPath string) *RuleManager {
 	}
 }
 
+func findECHProfileByID(profiles []ECHProfile, id string) *ECHProfile {
+	id = strings.TrimSpace(id)
+	if id == "" {
+		return nil
+	}
+	for i := range profiles {
+		if profiles[i].ID == id {
+			return &profiles[i]
+		}
+	}
+	return nil
+}
+
+func normalizeECHProfile(p *ECHProfile) {
+	if p == nil {
+		return
+	}
+	p.ID = strings.TrimSpace(p.ID)
+	p.Name = strings.TrimSpace(p.Name)
+	p.Config = strings.TrimSpace(p.Config)
+	p.DiscoveryDomain = strings.TrimSpace(p.DiscoveryDomain)
+	p.DoHUpstream = strings.TrimSpace(p.DoHUpstream)
+}
+
+func ensureLegacyCloudflareProfile(profiles *[]ECHProfile) string {
+	const profileID = "legacy-cloudflare"
+	if existing := findECHProfileByID(*profiles, profileID); existing != nil {
+		normalizeECHProfile(existing)
+		if existing.Name == "" {
+			existing.Name = "Legacy Cloudflare"
+		}
+		if existing.DiscoveryDomain == "" {
+			existing.DiscoveryDomain = "crypto.cloudflare.com"
+		}
+		existing.AutoUpdate = true
+		return existing.ID
+	}
+
+	*profiles = append(*profiles, ECHProfile{
+		ID:              profileID,
+		Name:            "Legacy Cloudflare",
+		DiscoveryDomain: "crypto.cloudflare.com",
+		AutoUpdate:      true,
+	})
+	return profileID
+}
+
+func migrateLegacyECHRules(siteGroups []SiteGroup, profiles *[]ECHProfile) bool {
+	migrated := false
+	for i := range siteGroups {
+		siteGroups[i].ECHProfileID = strings.TrimSpace(siteGroups[i].ECHProfileID)
+		siteGroups[i].ECHDomain = strings.TrimSpace(siteGroups[i].ECHDomain)
+		if siteGroups[i].ECHEnabled && siteGroups[i].ECHProfileID == "" &&
+			strings.EqualFold(siteGroups[i].ECHDomain, "crypto.cloudflare.com") {
+			siteGroups[i].ECHProfileID = ensureLegacyCloudflareProfile(profiles)
+			siteGroups[i].ECHDomain = ""
+			migrated = true
+		}
+	}
+	return migrated
+}
+
 func (rm *RuleManager) LoadConfig() error {
 	data, err := os.ReadFile(rm.configPath)
 	if err != nil {
@@ -1435,6 +1519,13 @@ func (rm *RuleManager) LoadConfig() error {
 	rm.serverHost = config.ServerHost
 	rm.serverAuth = config.ServerAuth
 	rm.listenPort = config.ListenPort
+	rm.echProfiles = config.ECHProfiles
+	if rm.echProfiles == nil {
+		rm.echProfiles = []ECHProfile{}
+	}
+	for i := range rm.echProfiles {
+		normalizeECHProfile(&rm.echProfiles[i])
+	}
 	if rm.listenPort == "" {
 		rm.listenPort = "8080"
 	}
@@ -1454,6 +1545,9 @@ func (rm *RuleManager) LoadConfig() error {
 			migrated = true
 		}
 	}
+	if migrateLegacyECHRules(rm.siteGroups, &rm.echProfiles) {
+		migrated = true
+	}
 
 	rm.buildRules()
 	if migrated {
@@ -1467,83 +1561,12 @@ func (rm *RuleManager) LoadConfig() error {
 }
 
 func (rm *RuleManager) saveDefaultConfig() error {
-	siteGroups, upstreams, err := loadEmbeddedRules()
-	if err != nil {
-		return err
-	}
-
-	rm.siteGroups = siteGroups
-	rm.upstreams = upstreams
+	rm.siteGroups = []SiteGroup{}
+	rm.upstreams = []Upstream{}
+	rm.echProfiles = []ECHProfile{}
 	rm.buildRules()
 
 	return rm.saveConfig()
-}
-
-func loadEmbeddedRules() ([]SiteGroup, []Upstream, error) {
-	var siteGroups []SiteGroup
-	var upstreams []Upstream
-
-	execPath := os.Args[0]
-	if filepath.IsAbs(execPath) == false {
-		var err error
-		execPath, err = os.Executable()
-		if err != nil {
-			execPath = os.Args[0]
-		}
-	}
-	execDir := filepath.Dir(execPath)
-
-	ruleFiles := []string{
-		filepath.Join(execDir, "rules", "mitm.json"),
-		filepath.Join(execDir, "rules", "transparent.json"),
-	}
-
-	log.Printf("[Config] Searching for rules in: %s", execDir)
-
-	for _, file := range ruleFiles {
-		data, err := os.ReadFile(file)
-		if err != nil {
-			log.Printf("[Config] Cannot read rule file: %s, err: %v", file, err)
-			continue
-		}
-
-		var configFile ConfigFile
-		if err := json.Unmarshal(data, &configFile); err != nil {
-			log.Printf("[Config] Failed to parse %s: %v", file, err)
-			continue
-		}
-
-		log.Printf("[Config] Loaded rule file: %s, found %d rules", file, len(configFile.Rules))
-
-		for _, rule := range configFile.Rules {
-			sg := SiteGroup{
-				ID:            generateID(),
-				Name:          rule.Name,
-				Website:       strings.TrimSpace(rule.Website),
-				Domains:       rule.Domains,
-				Mode:          configFile.Type,
-				Upstream:      rule.Upstream,
-				Upstreams:     append([]string(nil), rule.Upstreams...),
-				SniFake:       rule.SniFake,
-				ConnectPolicy: strings.ToLower(strings.TrimSpace(rule.ConnectPolicy)),
-				SniPolicy:     strings.ToLower(strings.TrimSpace(rule.SniPolicy)),
-				AlpnPolicy:    strings.ToLower(strings.TrimSpace(rule.AlpnPolicy)),
-				UTLSPolicy:    strings.ToLower(strings.TrimSpace(rule.UTLSPolicy)),
-				Enabled:       rule.Enabled,
-			}
-			siteGroups = append(siteGroups, sg)
-		}
-	}
-
-	if len(siteGroups) == 0 {
-		return nil, nil, fmt.Errorf("no embedded rules found")
-	}
-
-	// No hardcoded upstream fallback. All upstream selection must be rule-driven.
-	upstreams = []Upstream{}
-
-	log.Printf("[Config] Loaded %d rules from embedded files", len(siteGroups))
-	return siteGroups, upstreams, nil
 }
 
 func (rm *RuleManager) buildRules() {
@@ -1553,6 +1576,11 @@ func (rm *RuleManager) buildRules() {
 		if up.Enabled && up.Address != "" {
 			upstreamMap[up.ID] = up.Address
 		}
+	}
+
+	echProfileMap := make(map[string]ECHProfile)
+	for _, profile := range rm.echProfiles {
+		echProfileMap[profile.ID] = profile
 	}
 
 	for _, sg := range rm.siteGroups {
@@ -1575,22 +1603,45 @@ func (rm *RuleManager) buildRules() {
 			}
 		}
 
+		var echConfigBytes []byte
+		var echProfile ECHProfile
+		if sg.ECHProfileID != "" {
+			if profile, ok := echProfileMap[sg.ECHProfileID]; ok {
+				echProfile = profile
+				if configStr := strings.TrimSpace(profile.Config); configStr != "" {
+					if decoded, err := base64.StdEncoding.DecodeString(configStr); err == nil {
+						echConfigBytes = decoded
+						log.Printf("[BuildRules] Successfully loaded ECH Config for SiteGroup %s (%d bytes)", sg.ID, len(echConfigBytes))
+					} else {
+						log.Printf("[BuildRules] ERROR: Failed to decode ECH Config for SiteGroup %s: %v", sg.ID, err)
+					}
+				}
+			} else {
+				log.Printf("[BuildRules] WARNING: ECHProfileID %s linked to SiteGroup %s but profile not found", sg.ECHProfileID, sg.ID)
+			}
+		}
+
 		for _, domain := range sg.Domains {
 			rule := Rule{
-				Domain:        domain,
-				Mode:          sg.Mode,
-				Upstream:      resolvedUpstream,
-				Upstreams:     resolvedUpstreams,
-				SniFake:       sg.SniFake,
-				ConnectPolicy: strings.TrimSpace(sg.ConnectPolicy),
-				SniPolicy:     strings.TrimSpace(sg.SniPolicy),
-				AlpnPolicy:    strings.TrimSpace(sg.AlpnPolicy),
-				UTLSPolicy:    strings.TrimSpace(sg.UTLSPolicy),
-				Enabled:       true,
-				SiteID:        sg.ID,
-				ECHEnabled:    sg.ECHEnabled,
-				ECHDomain:     sg.ECHDomain,
-				UseCFPool:     sg.UseCFPool,
+				Domain:             domain,
+				Mode:               sg.Mode,
+				Upstream:           resolvedUpstream,
+				Upstreams:          resolvedUpstreams,
+				SniFake:            sg.SniFake,
+				ConnectPolicy:      strings.TrimSpace(sg.ConnectPolicy),
+				SniPolicy:          strings.TrimSpace(sg.SniPolicy),
+				AlpnPolicy:         strings.TrimSpace(sg.AlpnPolicy),
+				UTLSPolicy:         strings.TrimSpace(sg.UTLSPolicy),
+				Enabled:            true,
+				SiteID:             sg.ID,
+				ECHEnabled:         sg.ECHEnabled,
+				ECHProfileID:       sg.ECHProfileID,
+				ECHDomain:          sg.ECHDomain,
+				UseCFPool:          sg.UseCFPool,
+				ECHConfig:          echConfigBytes,
+				ECHDiscoveryDomain: echProfile.DiscoveryDomain,
+				ECHDoHUpstream:     echProfile.DoHUpstream,
+				ECHAutoUpdate:      echProfile.AutoUpdate,
 			}
 			rm.rules = append(rm.rules, rule)
 		}
@@ -1647,11 +1698,16 @@ func (rm *RuleManager) SaveConfig() error {
 		ServerAuth:       rm.serverAuth,
 		SiteGroups:       rm.siteGroups,
 		Upstreams:        rm.upstreams,
+		ECHProfiles:      rm.echProfiles,
 		CloudflareConfig: rm.cloudflareConfig,
 	}
 
 	data, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(rm.configPath), 0755); err != nil {
 		return err
 	}
 
@@ -1770,6 +1826,7 @@ func (rm *RuleManager) saveConfig() error {
 		ServerAuth:       rm.serverAuth,
 		SiteGroups:       rm.siteGroups,
 		Upstreams:        rm.upstreams,
+		ECHProfiles:      rm.echProfiles,
 		CloudflareConfig: rm.cloudflareConfig,
 	}
 
@@ -1778,7 +1835,57 @@ func (rm *RuleManager) saveConfig() error {
 		return err
 	}
 
+	if err := os.MkdirAll(filepath.Dir(rm.configPath), 0755); err != nil {
+		return err
+	}
+
 	return os.WriteFile(rm.configPath, data, 0644)
+}
+
+func (rm *RuleManager) GetECHProfiles() []ECHProfile {
+	rm.mu.RLock()
+	defer rm.mu.RUnlock()
+	if rm.echProfiles == nil {
+		return []ECHProfile{}
+	}
+	return rm.echProfiles
+}
+
+func (rm *RuleManager) UpsertECHProfile(p ECHProfile) error {
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
+
+	normalizeECHProfile(&p)
+	if p.ID == "" {
+		p.ID = generateID()
+		rm.echProfiles = append(rm.echProfiles, p)
+	} else {
+		found := false
+		for i, x := range rm.echProfiles {
+			if x.ID == p.ID {
+				rm.echProfiles[i] = p
+				found = true
+				break
+			}
+		}
+		if !found {
+			rm.echProfiles = append(rm.echProfiles, p)
+		}
+	}
+	return rm.saveConfig()
+}
+
+func (rm *RuleManager) DeleteECHProfile(id string) error {
+	rm.mu.Lock()
+	defer rm.mu.Unlock()
+
+	for i, x := range rm.echProfiles {
+		if x.ID == id {
+			rm.echProfiles = append(rm.echProfiles[:i], rm.echProfiles[i+1:]...)
+			break
+		}
+	}
+	return rm.saveConfig()
 }
 
 func generateID() string {
@@ -1807,12 +1914,61 @@ func (p *ProxyServer) GetUConn(conn net.Conn, sni string, allowInsecure bool, al
 		}
 	}
 
-	clientHelloID := utls.HelloChrome_Auto
+	clientHelloID := utls.HelloChrome_120
 	if strings.EqualFold(strings.TrimSpace(alpn), "http/1.1") {
-		clientHelloID = utls.HelloFirefox_Auto
+		clientHelloID = utls.HelloFirefox_120
 	}
 	uconn := utls.UClient(conn, config, clientHelloID)
 	return uconn
+}
+
+func (p *ProxyServer) resolveRuleECHConfig(host string, rule Rule) []byte {
+	if rule.ECHAutoUpdate {
+		lookupDomain := strings.TrimSpace(rule.ECHDiscoveryDomain)
+		if lookupDomain == "" {
+			lookupDomain = strings.TrimSpace(rule.ECHDomain)
+		}
+		if lookupDomain == "" {
+			lookupDomain = host
+		}
+
+		echCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		echConfig, err := p.FetchECH(echCtx, lookupDomain, strings.TrimSpace(rule.ECHDoHUpstream))
+		cancel()
+		if err == nil && len(echConfig) > 0 {
+			log.Printf("[Upstream] Refreshed ECH profile %s for %s via %s (%d bytes)", rule.ECHProfileID, host, lookupDomain, len(echConfig))
+			return echConfig
+		}
+		if err != nil {
+			log.Printf("[Upstream] ECH profile refresh failed for %s via %s: %v", host, lookupDomain, err)
+		}
+	}
+
+	if len(rule.ECHConfig) > 0 {
+		log.Printf("[Upstream] Using stored ECH profile %s for %s (%d bytes)", rule.ECHProfileID, host, len(rule.ECHConfig))
+		return rule.ECHConfig
+	}
+
+	if p.dohResolver == nil {
+		return nil
+	}
+
+	echLookupDomain := strings.TrimSpace(rule.ECHDomain)
+	if echLookupDomain == "" {
+		echLookupDomain = host
+	}
+	log.Printf("[Upstream] Fetching ECH for %s (via %s)", host, echLookupDomain)
+	echCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	echConfig, err := p.dohResolver.ResolveECH(echCtx, echLookupDomain)
+	cancel()
+	if err != nil {
+		log.Printf("[Upstream] ECH lookup failed for %s via %s: %v", host, echLookupDomain, err)
+		return nil
+	}
+	if len(echConfig) > 0 {
+		log.Printf("[Upstream] ECH fetched for %s via %s (%d bytes)", host, echLookupDomain, len(echConfig))
+	}
+	return echConfig
 }
 
 func (p *ProxyServer) handleServerMITM(clientConn net.Conn, host string, rule Rule) {
@@ -1918,22 +2074,22 @@ func (p *ProxyServer) handleServerMITM(clientConn net.Conn, host string, rule Ru
 			if req.URL.RawQuery != "" {
 				targetUrl += "?" + req.URL.RawQuery
 			}
-            
+
 			path := req.URL.EscapedPath()
 			if path == "" || !strings.HasPrefix(path, "/") {
 				path = "/" + strings.TrimPrefix(path, "/")
 			}
-			
+
 			workerUrlStr := "https://" + serverHost + "/" + p.rules.serverAuth + "/" + host + path
 			if req.URL.RawQuery != "" {
 				workerUrlStr += "?" + req.URL.RawQuery
 			}
 
 			newReq, err := http.NewRequest(req.Method, workerUrlStr, req.Body)
-            if err != nil {
-                http.Error(w, "Bad request", http.StatusInternalServerError)
-                return
-            }
+			if err != nil {
+				http.Error(w, "Bad request", http.StatusInternalServerError)
+				return
+			}
 
 			for k, vv := range req.Header {
 				for _, v := range vv {
@@ -1950,7 +2106,7 @@ func (p *ProxyServer) handleServerMITM(clientConn net.Conn, host string, rule Ru
 
 			resp, err := client.Do(newReq)
 			if err != nil {
-                log.Printf("[ServerMode] Forwarding error method=%s workerURL=%s host=%s target=%s err=%v", req.Method, workerUrlStr, newReq.Host, targetUrl, err)
+				log.Printf("[ServerMode] Forwarding error method=%s workerURL=%s host=%s target=%s err=%v", req.Method, workerUrlStr, newReq.Host, targetUrl, err)
 				http.Error(w, "Proxy error", http.StatusBadGateway)
 				return
 			}
@@ -1966,7 +2122,7 @@ func (p *ProxyServer) handleServerMITM(clientConn net.Conn, host string, rule Ru
 			io.Copy(w, resp.Body)
 		}),
 	}
-	
+
 	_ = srv.Serve(&singleConnListener{conn: clientTls, done: make(chan struct{})})
 }
 
@@ -1987,9 +2143,12 @@ func (p *ProxyServer) establishUpstreamConn(host string, rule Rule, dialCandidat
 
 	useUTLS := false
 	switch utlsPolicy {
-	case "off": useUTLS = false
-	case "on":  useUTLS = true
-	default:    useUTLS = effectiveFakeSNI || rule.ECHEnabled
+	case "off":
+		useUTLS = false
+	case "on":
+		useUTLS = true
+	default:
+		useUTLS = effectiveFakeSNI || rule.ECHEnabled
 	}
 
 	upstreamALPN := initialALPN
@@ -1998,18 +2157,8 @@ func (p *ProxyServer) establishUpstreamConn(host string, rule Rule, dialCandidat
 	}
 
 	var echConfig []byte
-	if useUTLS && rule.ECHEnabled && p.dohResolver != nil {
-		echLookupDomain := rule.ECHDomain
-		if echLookupDomain == "" {
-			echLookupDomain = host
-		}
-		log.Printf("[Upstream] Fetching ECH for %s (via %s)", host, echLookupDomain)
-		echCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		echConfig, _ = p.dohResolver.ResolveECH(echCtx, echLookupDomain)
-		cancel()
-		if len(echConfig) > 0 {
-			log.Printf("[Upstream] ECH Hijacked/Fetched (%d bytes)", len(echConfig))
-		}
+	if useUTLS && rule.ECHEnabled {
+		echConfig = p.resolveRuleECHConfig(host, rule)
 	}
 
 	// 3. 按候选逐个拨号+握手（关键：握手失败也要尝试下一个候选）
@@ -2034,6 +2183,9 @@ func (p *ProxyServer) establishUpstreamConn(host string, rule Rule, dialCandidat
 			// 这样握手过程中的 inner-client-hello 才能通过 cloudflare 的校验。
 			if len(echConfig) > 0 {
 				targetSNI = host
+				log.Printf("[Upstream] ECH ACTIVE: Setting Inner SNI = %s for addr %s", targetSNI, addr)
+			} else if rule.ECHEnabled {
+				log.Printf("[Upstream] WARNING: ECH is enabled for %s but NO ECH config available. Handshake will LEAK domain!", host)
 			}
 
 			uconn := p.GetUConn(rawConn, targetSNI, true, upstreamALPN, echConfig)
@@ -2105,4 +2257,18 @@ func (p *ProxyServer) establishUpstreamConn(host string, rule Rule, dialCandidat
 		return nil, "", fmt.Errorf("all candidates failed with unknown error")
 	}
 	return nil, "", fmt.Errorf("all candidates failed: %s", strings.Join(errs, " | "))
+}
+
+// FetchECH performs a one-off ECH resolution via DoH for a specific domain and upstream
+func (p *ProxyServer) FetchECH(ctx context.Context, domain string, dohURL string) ([]byte, error) {
+	if dohURL == "" {
+		if p.dohResolver != nil {
+			return p.dohResolver.ResolveECH(ctx, domain)
+		}
+		return nil, fmt.Errorf("no default DoH resolver available")
+	}
+
+	// Create a temporary resolver for the specific upstream
+	tempResolver := NewDoHResolver(dohURL)
+	return tempResolver.ResolveECH(ctx, domain)
 }

@@ -26,6 +26,10 @@ type ConfigRule struct {
 	SniPolicy     string   `json:"sni_policy,omitempty"`
 	AlpnPolicy    string   `json:"alpn_policy,omitempty"`
 	UTLSPolicy    string   `json:"utls_policy,omitempty"`
+	ECHEnabled    bool     `json:"ech_enabled,omitempty"`
+	ECHProfileID  string   `json:"ech_profile_id,omitempty"`
+	ECHDomain     string   `json:"ech_domain,omitempty"`
+	UseCFPool     bool     `json:"use_cf_pool,omitempty"`
 }
 
 type ImportSummary struct {
@@ -52,6 +56,10 @@ func (rm *RuleManager) ExportConfig() (string, error) {
 			SniPolicy:     sg.SniPolicy,
 			AlpnPolicy:    sg.AlpnPolicy,
 			UTLSPolicy:    sg.UTLSPolicy,
+			ECHEnabled:    sg.ECHEnabled,
+			ECHProfileID:  sg.ECHProfileID,
+			ECHDomain:     sg.ECHDomain,
+			UseCFPool:     sg.UseCFPool,
 		}
 
 		if sg.Mode == "mitm" {
@@ -165,6 +173,10 @@ func (rm *RuleManager) ImportConfigWithSummary(content string) (ImportSummary, e
 				AlpnPolicy:    strings.ToLower(strings.TrimSpace(rule.AlpnPolicy)),
 				UTLSPolicy:    strings.ToLower(strings.TrimSpace(rule.UTLSPolicy)),
 				Enabled:       rule.Enabled,
+				ECHEnabled:    rule.ECHEnabled,
+				ECHProfileID:  rule.ECHProfileID,
+				ECHDomain:     rule.ECHDomain,
+				UseCFPool:     rule.UseCFPool,
 			}
 			if sg.Name == "" {
 				sg.Name = sg.Domains[0]

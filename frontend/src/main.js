@@ -1,5 +1,5 @@
-import { StartProxy, StopProxy, IsProxyRunning, GetSiteGroups, AddSiteGroup, DeleteSiteGroup, UpdateSiteGroup, ExportConfig, ImportConfigWithSummary, GetCAInstallStatus, OpenCAFile, GetCACertPEM, GetSystemProxyStatus, EnableSystemProxy, DisableSystemProxy, RegenerateCert, ExportCert, GetListenPort, SetListenPort, SetProxyMode, GetProxyMode, GetRecentLogs, ClearLogs, ProxySelfCheck, GetProxyDiagnostics, GetCloudflareConfig, UpdateCloudflareConfig, TriggerCFHealthCheck, RemoveInvalidCFIPs, GetCloudflareIPStats, ForceFetchCloudflareIPs, GetServerConfig, UpdateServerConfig } from '../wailsjs/go/main/App';
-import { WindowMinimise, WindowToggleMaximise, Quit } from '../wailsjs/runtime/runtime';
+import { StartProxy, StopProxy, IsProxyRunning, GetSiteGroups, AddSiteGroup, DeleteSiteGroup, UpdateSiteGroup, ExportConfig, ImportConfigWithSummary, GetCAInstallStatus, OpenCAFile, GetCACertPEM, GetSystemProxyStatus, EnableSystemProxy, DisableSystemProxy, RegenerateCert, ExportCert, GetListenPort, SetListenPort, SetProxyMode, GetProxyMode, GetRecentLogs, ClearLogs, ProxySelfCheck, GetProxyDiagnostics, GetCloudflareConfig, UpdateCloudflareConfig, TriggerCFHealthCheck, RemoveInvalidCFIPs, GetCloudflareIPStats, ForceFetchCloudflareIPs, GetServerConfig, UpdateServerConfig, InstallCA, GetECHProfiles, UpsertECHProfile, DeleteECHProfile, FetchECHConfig } from '../wailsjs/go/main/App.js';
+import { WindowMinimise, WindowToggleMaximise, Quit } from '../wailsjs/runtime/runtime.js';
 
 let isRunning = false;
 let systemProxyEnabled = false;
@@ -8,6 +8,22 @@ let loggingEnabled = true;
 let backendLogPoll = null;
 let rulesSearchQuery = '';
 let rulesViewMode = 'mitm';
+let echProfiles = [];
+
+function getModeLabel(mode) {
+    switch ((mode || '').toLowerCase()) {
+    case 'server':
+        return 'Server 节点';
+    case 'mitm':
+        return 'MITM';
+    case 'transparent':
+        return '透传';
+    case 'tls-rf':
+        return 'TLS 分片';
+    default:
+        return mode || '未知模式';
+    }
+}
 
 window.windowMinimise = function () {
     WindowMinimise();
@@ -65,7 +81,7 @@ function updateStatus() {
     const proxyMode = document.getElementById('proxy-mode');
     const mode = document.querySelector('input[name="mode"]:checked').value;
 
-    proxyMode.textContent = mode === 'mitm' ? 'MITM' : '透传';
+    proxyMode.textContent = getModeLabel(mode);
 
     if (isRunning) {
         statusEl.classList.add('running');
@@ -213,6 +229,9 @@ window.showPage = function (pageId) {
     if (pageId === 'settings') {
         loadCloudflareConfig();
     }
+    if (pageId === 'cloudflare') {
+        loadECHProfiles();
+    }
     if (pageId === 'rules') {
         loadSiteGroups();
     }
@@ -227,7 +246,7 @@ window.showPage = function (pageId) {
     }
 
     if (pageId === 'cloudflare') {
-        loadCloudflareRules();
+        loadECHProfiles();
     }
 }
 
@@ -392,7 +411,7 @@ async function loadSiteGroups() {
                                 <div class="rule-name">${group.name || '未命名'}</div>
                                 <div class="rule-domains">${(group.domains || []).join(', ')}</div>
                                 <div class="rule-domains">${group.ech_enabled ? '<span style="color:var(--success)">ECH开启</span>' : ''} ${group.use_cf_pool ? '<span style="color:var(--primary)">优选IP</span>' : ''}</div>
-                                <div class="rule-mode">${group.mode === 'server' ? 'Server 节点' : (group.mode === 'mitm' ? 'MITM' : '透传')}${group.upstream ? ' → ' + (group.upstream.length > 40 ? group.upstream.substring(0, 40) + '...' : group.upstream) : ''}</div>
+                                <div class="rule-mode">${getModeLabel(group.mode)}${group.upstream ? ' → ' + (group.upstream.length > 40 ? group.upstream.substring(0, 40) + '...' : group.upstream) : ''}</div>
                             </div>
                             <div class="rule-actions">
                                 <button class="btn btn-secondary" onclick="showEditRuleModal('${group.id}')">编辑</button>
@@ -409,7 +428,11 @@ async function loadSiteGroups() {
             return modeColumn;
         };
 
-        const title = rulesViewMode === 'server' ? 'Server 节点规则' : (rulesViewMode === 'transparent' ? '透传规则' : 'MITM 规则');
+        const title = rulesViewMode === 'server'
+            ? 'Server 节点规则'
+            : (rulesViewMode === 'transparent'
+                ? '透传规则'
+                : (rulesViewMode === 'tls-rf' ? 'TLS 分片规则' : 'MITM 规则'));
         container.appendChild(buildModeColumn(rulesViewMode, title));
     } catch (err) {
         console.error('Load site groups error:', err);
@@ -442,8 +465,10 @@ window.showAddRuleModal = function () {
     document.getElementById('input-ech-domain').value = '';
     document.getElementById('input-utls-policy').value = '';
     document.getElementById('input-ech-enabled').checked = false;
+    document.getElementById('input-ech-profile-id').value = '';
     document.getElementById('input-use-cf-pool').checked = false;
     document.getElementById('input-enabled').checked = true;
+    updateECHProfileDropdown();
     document.getElementById('modal-overlay').style.display = 'flex';
 };
 
@@ -467,6 +492,10 @@ window.showEditRuleModal = async function (id) {
         document.getElementById('input-ech-domain').value = group.ech_domain || '';
         document.getElementById('input-utls-policy').value = group.utls_policy || '';
         document.getElementById('input-ech-enabled').checked = !!group.ech_enabled;
+        
+        await updateECHProfileDropdown();
+        document.getElementById('input-ech-profile-id').value = group.ech_profile_id || '';
+        
         document.getElementById('input-use-cf-pool').checked = !!group.use_cf_pool;
         document.getElementById('input-enabled').checked = group.enabled !== false;
         document.getElementById('modal-overlay').style.display = 'flex';
@@ -490,6 +519,7 @@ window.confirmModal = async function () {
     const echDomain = document.getElementById('input-ech-domain').value.trim();
     const utlsPolicy = document.getElementById('input-utls-policy').value;
     const echEnabled = document.getElementById('input-ech-enabled').checked;
+    const echProfileId = document.getElementById('input-ech-profile-id').value;
     const useCfPool = document.getElementById('input-use-cf-pool').checked;
     const enabled = document.getElementById('input-enabled').checked;
 
@@ -512,6 +542,7 @@ window.confirmModal = async function () {
             upstream,
             sni_fake: snifake,
             ech_domain: echDomain,
+            ech_profile_id: echProfileId,
             utls_policy: utlsPolicy,
             ech_enabled: echEnabled,
             use_cf_pool: useCfPool,
@@ -641,7 +672,7 @@ async function loadCloudflareRules() {
         if (cfRules.length === 0) {
             container.innerHTML = `
                 <div style="text-align:center; padding: 40px; color: var(--text-secondary); background: var(--bg-dark); border-radius: 12px; border: 1px dashed var(--border);">
-                    <div style="font-size: 24px; margin-bottom: 8px;">🚀</div>
+                    <div style="font-size: 24px; margin-bottom: 8px;"></div>
                     暂无 ECH 加速规则，在上方输入域名开始加速
                 </div>`;
             return;
@@ -664,9 +695,9 @@ async function loadCloudflareRules() {
                 <div class="card-info">
                     <div class="card-title">${domains}</div>
                     <div class="card-meta">
-                        <span class="card-badge">🌐 ${ip}</span>
+                        <span class="card-badge">${ip}</span>
                         <span class="card-badge" style="${isDefaultECH ? 'opacity: 0.6;' : 'color: var(--accent);'}">
-                            🔒 ECH: ${isDefaultECH ? '自动' : echSource}
+                            ECH: ${isDefaultECH ? '自动' : echSource}
                         </span>
                     </div>
                 </div>
@@ -770,10 +801,55 @@ function renderIpGrid() {
 
     // 批量生成卡片，减少 Reflow
     const fragment = document.createDocumentFragment();
+
+    // 计算统计信息
+    let goodCount = 0;
+    let fairCount = 0;
+    let poorCount = 0;
+    let checkingCount = 0;
+
+    list.forEach((ip) => {
+        const stat = statsMap[ip];
+        if (!stat) {
+            checkingCount++;
+        } else if (stat.failures >= 3) {
+            poorCount++;
+        } else {
+            const ms = Math.round(stat.latency / 1000000);
+            if (ms > 0 && ms < 100) goodCount++;
+            else if (ms > 0 && ms < 300) fairCount++;
+            else if (ms > 0) poorCount++;
+            else checkingCount++;
+        }
+    });
+
+    // 添加统计汇总
+    const summaryDiv = document.createElement('div');
+    summaryDiv.className = 'ip-summary';
+    summaryDiv.innerHTML = `
+        <div class="ip-summary-item">
+            <span class="ip-summary-count">${list.length}</span>
+            <span class="ip-summary-label">总 IP</span>
+        </div>
+        <div class="ip-summary-item ip-summary-good">
+            <span class="ip-summary-count">${goodCount}</span>
+            <span class="ip-summary-label">优 (100ms)</span>
+        </div>
+        <div class="ip-summary-item ip-summary-fair">
+            <span class="ip-summary-count">${fairCount}</span>
+            <span class="ip-summary-label">中 (300ms)</span>
+        </div>
+        <div class="ip-summary-item ip-summary-poor">
+            <span class="ip-summary-count">${poorCount}</span>
+            <span class="ip-summary-label">差/失效</span>
+        </div>
+    `;
+    container.appendChild(summaryDiv);
+
     list.forEach((ip) => {
         const stat = statsMap[ip];
         let latencyClass = 'checking';
-        let latencyText = 'checking...';
+        let latencyText = 'pending';
 
         if (stat) {
             if (stat.failures >= 3) {
@@ -792,10 +868,12 @@ function renderIpGrid() {
 
         const card = document.createElement('div');
         card.className = 'ip-card';
+        const isInPool = currentIpPool.includes(ip);
         card.innerHTML = `
             <div class="ip-address">${ip}</div>
             <div class="ip-meta">
                 <span class="ip-latency ${latencyClass}">${latencyText}</span>
+                ${isInPool ? '<span class="ip-pool-badge">池</span>' : ''}
             </div>
             <div class="ip-remove" onclick="removeIpTag('${ip}')" title="移除 IP">×</div>
         `;
@@ -846,18 +924,6 @@ async function withLoading(btnId, loadingText, action) {
     }
 }
 
-window.manualUpdateIPs = async function () {
-    await withLoading('manualUpdateIPs', '更新中...', async () => {
-        try {
-            await ForceFetchCloudflareIPs();
-            addLog('info', '已强制从 API 获取最新优选 IP');
-            await loadCloudflareConfig();
-        } catch (err) {
-            addLog('error', '更新失败: ' + err);
-        }
-    });
-};
-
 async function saveCloudflareConfig() {
     const doh_url = document.getElementById('setting-cf-doh')?.value.trim();
     const auto_update = document.getElementById('setting-cf-auto-update')?.checked;
@@ -884,79 +950,24 @@ async function saveCloudflareConfig() {
     }
 }
 
-window.saveServerConfig = async function () {
-    const btn = document.getElementById('btn-save-server');
-    const originalText = btn.innerHTML;
 
+window.loadECHDiscoveryDomains = async function () {
     try {
-        btn.disabled = true;
-        btn.innerHTML = '⌛ 保存中...';
+        const domains = await GetECHDiscoveryDomains();
+        const container = document.getElementById('ech-discovery-domains');
+        if (!container) return;
 
-        const serverHost = document.getElementById('setting-server-host')?.value.trim();
-        const serverAuth = document.getElementById('setting-server-auth')?.value.trim();
-
-        await UpdateServerConfig(serverHost || "", serverAuth || "");
-
-        btn.innerHTML = '✅ 已保存';
-        addLog('success', 'Server 节点配置持久化成功');
-
-        setTimeout(() => {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-        }, 1500);
+        if (!domains || domains.length === 0) {
+            container.innerHTML = '暂无已开启 ECH Discovery 的域名';
+        } else {
+            container.innerHTML = `已开启 ECH Discovery 的域名: <strong>${domains.join(', ')}</strong>`;
+        }
     } catch (err) {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-        addLog('error', 'Server 配置保存失败: ' + err);
+        console.error('Failed to load ECH discovery domains:', err);
     }
 };
 
-window.addServerRule = async function () {
-    const input = document.getElementById('server-input-domains');
-    const domainsRaw = input.value.trim();
-    if (!domainsRaw) {
-        addLog('warn', '请先输入要加速的域名');
-        return;
-    }
-
-    const domains = domainsRaw.split('\n').map(d => d.trim()).filter(d => d);
-    if (domains.length === 0) return;
-
-    try {
-        const count = domains.length;
-        addLog('info', `正在为 ${count} 个域名创建 Server 加速规则...`);
-
-        for (const domain of domains) {
-            // 清理域名，防止带协议头
-            let cleanDomain = domain.replace(/^https?:\/\//, '').replace(/\/$/, '');
-
-            const groupData = {
-                id: 'sg-srv-' + Date.now() + Math.floor(Math.random() * 1000),
-                name: 'Server加速: ' + cleanDomain,
-                website: 'server-batch',
-                domains: [cleanDomain],
-                mode: 'server',
-                upstream: '',
-                sni_fake: '',
-                ech_domain: '',
-                utls_policy: 'on', // 批量添加默认开启强力模式
-                ech_enabled: true,
-                use_cf_pool: true,
-                enabled: true
-            };
-
-            await AddSiteGroup(groupData);
-        }
-
-        addLog('success', `成功添加 ${count} 条加速规则！`);
-        input.value = '';
-        if (document.getElementById('page-rules').style.display !== 'none') {
-            loadSiteGroups();
-        }
-    } catch (err) {
-        addLog('error', '批量添加规则失败: ' + err);
-    }
-};
+// Removed duplicate saveServerConfig and addServerRule
 
 async function saveIpPool() {
     await saveCloudflareConfig();
@@ -1048,6 +1059,8 @@ window.addCloudflareRule = async function () {
     // Name it based on the first domain.
     const groupName = domains[0] + (domains.length > 1 ? ` 等${domains.length}个` : '');
 
+    const echProfileId = document.getElementById('cf-input-ech-profile-id')?.value || '';
+    
     const newGroup = {
         name: groupName,
         website: domains[0].split('.')[0],
@@ -1056,6 +1069,7 @@ window.addCloudflareRule = async function () {
         upstream: ipInput ? (ipInput.includes(':') ? ipInput : ipInput + ":443") : "",
         ech_enabled: true,
         ech_domain: echDomain,
+        ech_profile_id: echProfileId,
         use_cf_pool: !ipInput, // If no specific IP entered, use pool
         sni_policy: "fake",    // Force fake SNI policy (ECH handles outer)
         utls_policy: "auto",
@@ -1123,6 +1137,21 @@ window.openCertFile = async function () {
     }
 };
 
+window.installCert = async function () {
+    try {
+        await InstallCA();
+        addLog('info', '证书已自动安装到系统');
+        const status = await GetCAInstallStatus();
+        if (status.Installed) {
+            document.getElementById('cert-install-status').textContent = '已安装';
+            document.getElementById('cert-install-status').style.color = 'var(--success)';
+        }
+    } catch (err) {
+        console.error('Install cert error:', err);
+        addLog('error', '自动安装证书失败: ' + err);
+    }
+};
+
 function updateThemeIcon(theme) {
     const toggleBtn = document.getElementById('theme-toggle');
     if (toggleBtn) {
@@ -1186,10 +1215,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const modeServerBtn = document.getElementById('rules-mode-server');
     const modeMitmBtn = document.getElementById('rules-mode-mitm');
     const modeTransBtn = document.getElementById('rules-mode-transparent');
+    const modeTLSRFBtn = document.getElementById('rules-mode-tls-rf');
     const updateRulesModeButtons = () => {
         if (modeServerBtn) modeServerBtn.classList.toggle('active', rulesViewMode === 'server');
         if (modeMitmBtn) modeMitmBtn.classList.toggle('active', rulesViewMode === 'mitm');
         if (modeTransBtn) modeTransBtn.classList.toggle('active', rulesViewMode === 'transparent');
+        if (modeTLSRFBtn) modeTLSRFBtn.classList.toggle('active', rulesViewMode === 'tls-rf');
     };
     if (modeServerBtn) {
         modeServerBtn.addEventListener('click', () => {
@@ -1208,6 +1239,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (modeTransBtn) {
         modeTransBtn.addEventListener('click', () => {
             rulesViewMode = 'transparent';
+            updateRulesModeButtons();
+            loadSiteGroups();
+        });
+    }
+    if (modeTLSRFBtn) {
+        modeTLSRFBtn.addEventListener('click', () => {
+            rulesViewMode = 'tls-rf';
             updateRulesModeButtons();
             loadSiteGroups();
         });
@@ -1267,7 +1305,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         isRunning = await IsProxyRunning();
         const backendMode = await GetProxyMode();
-        if (backendMode === 'mitm' || backendMode === 'transparent') {
+        if (backendMode === 'mitm' || backendMode === 'transparent' || backendMode === 'tls-rf') {
             const radio = document.querySelector(`input[name="mode"][value="${backendMode}"]`);
             if (radio) radio.checked = true;
         } else {
@@ -1284,6 +1322,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     await checkCertAndPrompt();
 
     await loadCloudflareConfig();
+    await loadCloudflareRules();
+    await updateECHProfileDropdown();
+    
     document.getElementById('setting-cf-doh')?.addEventListener('change', saveCloudflareConfig);
     document.getElementById('setting-server-host')?.addEventListener('change', saveCloudflareConfig);
     document.getElementById('setting-server-auth')?.addEventListener('change', saveCloudflareConfig);
@@ -1307,8 +1348,8 @@ window.saveServerConfig = async function () {
 
         await UpdateServerConfig(serverHost, serverAuth);
 
-        btn.innerHTML = '✅ 已保存';
-        addLog('success', 'Server 节点配置已刷新并存入 config.json');
+        btn.innerHTML = '已保存';
+        addLog('success', 'Server 节点配置已刷新并存入 rules/config.json');
 
         setTimeout(() => {
             btn.disabled = false;
@@ -1342,6 +1383,8 @@ window.addServerRule = async function () {
             let cleanDomain = domain.replace(/^https?:\/\//, '').split('/')[0].trim();
             if (!cleanDomain) continue;
 
+            const echProfileId = document.getElementById('server-input-ech-profile-id')?.value || '';
+
             const groupData = {
                 id: 'sg-srv-' + Date.now() + Math.floor(Math.random() * 1000),
                 name: 'Server: ' + cleanDomain,
@@ -1351,7 +1394,8 @@ window.addServerRule = async function () {
                 upstream: '',
                 sni_fake: '',
                 ech_domain: '',
-                utls_policy: 'on',
+                ech_profile_id: echProfileId,
+                utls_policy: 'auto',
                 ech_enabled: true,
                 use_cf_pool: true,
                 enabled: true
@@ -1372,3 +1416,200 @@ window.addServerRule = async function () {
     }
 };
 
+// --- ECH Profile Management ---
+window.loadECHProfiles = async function() {
+    try {
+        const profiles = await GetECHProfiles();
+        echProfiles = profiles || [];
+        renderECHProfiles();
+        await updateECHProfileDropdown();
+    } catch (err) {
+        console.error('Load ECH profiles error:', err);
+        addLog('error', '加载 ECH 配置文件失败: ' + err);
+    }
+};
+
+function renderECHProfiles() {
+    const container = document.getElementById('ech-profiles-container');
+    if (!container) return;
+
+    if (echProfiles.length === 0) {
+        container.innerHTML = '<div class="empty-state">暂无配置文件，点击上方按钮添加</div>';
+        return;
+    }
+
+    container.innerHTML = '';
+    echProfiles.forEach(p => {
+        const badges = [];
+        if (p.discovery_domain) {
+            badges.push(`<span class="card-badge">发现域名: ${p.discovery_domain}</span>`);
+        }
+        if (p.doh_upstream) {
+            badges.push(`<span class="card-badge">DoH: ${p.doh_upstream}</span>`);
+        }
+        if (p.auto_update) {
+            badges.push('<span class="card-badge">自动更新</span>');
+        }
+        if (p.config) {
+            badges.push(`<span class="card-badge" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Config: ${p.config.substring(0, 20)}...</span>`);
+        } else {
+            badges.push('<span class="card-badge">仅动态获取</span>');
+        }
+        const item = document.createElement('div');
+        item.className = 'card-item';
+        item.innerHTML = `
+            <div class="card-info">
+                <div class="card-title">${p.name}</div>
+                <div class="card-meta">
+                    ${badges.join('')}
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="btn btn-secondary btn-sm" onclick="showECHProfileModal('${p.id}')">编辑</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteECHProfile('${p.id}')">删除</button>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+window.showECHProfileModal = function(id) {
+    const title = document.getElementById('ech-modal-title');
+    const inputId = document.getElementById('ech-input-id');
+    const inputName = document.getElementById('ech-input-name');
+    const inputConfig = document.getElementById('ech-input-config');
+    const inputDiscoveryDomain = document.getElementById('ech-input-discovery-domain');
+    const inputDoHUpstream = document.getElementById('ech-input-doh-upstream');
+    const inputAutoUpdate = document.getElementById('ech-input-auto-update');
+
+    if (id) {
+        const p = echProfiles.find(x => x.id === id);
+        if (p) {
+            title.textContent = '编辑 ECH 配置文件';
+            inputId.value = p.id;
+            inputName.value = p.name;
+            inputConfig.value = p.config;
+            inputDiscoveryDomain.value = p.discovery_domain || '';
+            inputDoHUpstream.value = p.doh_upstream || '';
+            inputAutoUpdate.checked = !!p.auto_update;
+        }
+    } else {
+        title.textContent = '添加 ECH 配置文件';
+        inputId.value = '';
+        inputName.value = '';
+        inputConfig.value = '';
+        inputDiscoveryDomain.value = '';
+        inputDoHUpstream.value = '';
+        inputAutoUpdate.checked = false;
+    }
+
+    document.getElementById('ech-profile-modal').style.display = 'flex';
+};
+
+window.closeECHProfileModal = function() {
+    document.getElementById('ech-profile-modal').style.display = 'none';
+};
+
+window.saveECHProfile = async function() {
+    const id = document.getElementById('ech-input-id').value;
+    const name = document.getElementById('ech-input-name').value.trim();
+    const config = document.getElementById('ech-input-config').value.trim();
+    const discoveryDomain = document.getElementById('ech-input-discovery-domain').value.trim();
+    const dohUpstream = document.getElementById('ech-input-doh-upstream').value.trim();
+    const autoUpdate = document.getElementById('ech-input-auto-update').checked;
+
+    if (!name) {
+        addLog('warn', '请填写配置名称');
+        return;
+    }
+
+    if (!config && !autoUpdate) {
+        addLog('warn', '请填写配置串，或启用自动更新');
+        return;
+    }
+
+    if (autoUpdate && !discoveryDomain) {
+        addLog('warn', '启用自动更新时请填写自动发现域名');
+        return;
+    }
+
+    try {
+        await UpsertECHProfile({
+            id: id,
+            name: name,
+            config: config,
+            discovery_domain: discoveryDomain,
+            doh_upstream: dohUpstream,
+            auto_update: autoUpdate
+        });
+        addLog('success', (id ? '更新' : '添加') + ' ECH 配置文件: ' + name);
+        closeECHProfileModal();
+        loadECHProfiles();
+    } catch (err) {
+        addLog('error', '保存 ECH 配置文件失败: ' + err);
+    }
+};
+
+window.fetchECHConfigFromModal = async function() {
+    const domain = document.getElementById('ech-input-discovery-domain').value.trim();
+    const doh = document.getElementById('ech-input-doh-upstream').value.trim();
+    const configArea = document.getElementById('ech-input-config');
+    
+    if (!domain) {
+        addLog('warn', '请填写要解析的域名');
+        return;
+    }
+    
+    try {
+        addLog('info', '正在解析 ECH 配置: ' + domain);
+        const config = await FetchECHConfig(domain, doh);
+        if (config) {
+            configArea.value = config;
+            addLog('success', 'ECH 配置解析成功: ' + domain);
+        } else {
+            addLog('warn', '未能解析到 ECH 配置: ' + domain);
+        }
+    } catch (err) {
+        addLog('error', '解析 ECH 失败: ' + err);
+    }
+};
+
+window.deleteECHProfile = async function(id) {
+    if (!confirm('确定要删除此 ECH 配置文件吗？引用此配置的规则将失效。')) return;
+    try {
+        await DeleteECHProfile(id);
+        addLog('info', '删除 ECH 配置文件: ' + id);
+        loadECHProfiles();
+    } catch (err) {
+        addLog('error', '删除 ECH 配置文件失败: ' + err);
+    }
+};
+
+async function updateECHProfileDropdown() {
+    const selectors = ['input-ech-profile-id', 'cf-input-ech-profile-id', 'server-input-ech-profile-id'];
+    
+    try {
+        const profiles = await GetECHProfiles();
+        echProfiles = profiles || [];
+    } catch (e) {
+        console.error('Fetch profiles error:', e);
+    }
+
+    selectors.forEach(id => {
+        const select = document.getElementById(id);
+        if (!select) return;
+
+        // Preserve selection
+        const currentVal = select.value;
+        
+        select.innerHTML = '<option value="">(无 - 自动从 DoH fallback)</option>';
+        echProfiles.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.id;
+            opt.textContent = p.name;
+            select.appendChild(opt);
+        });
+
+        select.value = currentVal;
+    });
+}

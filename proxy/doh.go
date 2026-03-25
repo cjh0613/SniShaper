@@ -37,7 +37,7 @@ func (r *DoHResolver) ResolveECH(ctx context.Context, domain string) ([]byte, er
 
 	msg := new(dns.Msg)
 	msg.SetQuestion(dns.Fqdn(domain), dns.TypeHTTPS)
-	
+
 	resp, err := r.exchange(ctx, msg)
 	if err != nil {
 		return nil, err
@@ -85,7 +85,7 @@ func (r *DoHResolver) exchange(ctx context.Context, msg *dns.Msg) (*dns.Msg, err
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Create a pipe to stream the body
 	pr, pw := io.Pipe()
 	go func() {

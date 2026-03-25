@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/tls"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"log"
@@ -113,7 +114,7 @@ func (w *ringLogWriter) AppendLine(line string) {
 func NewApp() *App {
 	execPath, _ := os.Executable()
 	execDir := filepath.Dir(execPath)
-	configPath := filepath.Join(execDir, "config.json")
+	configPath := filepath.Join(execDir, "rules", "config.json")
 
 	ruleManager := proxy.NewRuleManager(configPath)
 	if err := ruleManager.LoadConfig(); err != nil {
@@ -373,6 +374,13 @@ func (a *App) OpenCAFile() error {
 	return a.certManager.OpenCAFile()
 }
 
+func (a *App) InstallCA() error {
+	if a.certManager == nil {
+		return fmt.Errorf("cert manager not initialized")
+	}
+	return a.certManager.InstallCA()
+}
+
 func (a *App) GetCACertPEM() string {
 	if a.certManager != nil {
 		return a.certManager.GetCACertPEM()
@@ -433,6 +441,18 @@ func (a *App) DeleteUpstream(id string) error {
 
 func (a *App) GetCloudflareConfig() proxy.CloudflareConfig {
 	return a.ruleManager.GetCloudflareConfig()
+}
+
+func (a *App) GetECHProfiles() []proxy.ECHProfile {
+	return a.ruleManager.GetECHProfiles()
+}
+
+func (a *App) UpsertECHProfile(p proxy.ECHProfile) error {
+	return a.ruleManager.UpsertECHProfile(p)
+}
+
+func (a *App) DeleteECHProfile(id string) error {
+	return a.ruleManager.DeleteECHProfile(id)
 }
 
 func (a *App) GetServerConfig() map[string]string {
@@ -558,6 +578,7 @@ func (a *App) RemoveInvalidCFIPs() int {
 	return count
 }
 
+
 func (a *App) GetSystemProxyStatus() SystemProxyStatus {
 	status := sysproxy.GetSystemProxyStatus()
 	return SystemProxyStatus{
@@ -680,4 +701,25 @@ func (a *App) ProxySelfCheck() string {
 	msg := fmt.Sprintf("[diag] ProxySelfCheck success: status=%d", resp.StatusCode)
 	a.appendLog(msg)
 	return msg
+}
+
+func (a *App) FetchECHConfig(domain string, dohURL string) (string, error) {
+	a.appendLog(fmt.Sprintf("[DoH] Fetching ECH for %s via %s", domain, dohURL))
+	
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	config, err := a.proxyServer.FetchECH(ctx, domain, dohURL)
+	if err != nil {
+		a.appendLog(fmt.Sprintf("[error] ECH fetch failed: %v", err))
+		return "", err
+	}
+
+	if len(config) == 0 {
+		return "", fmt.Errorf("no ECH config found")
+	}
+
+	encoded := base64.StdEncoding.EncodeToString(config)
+	a.appendLog(fmt.Sprintf("[success] ECH fetch ok (%d bytes)", len(config)))
+	return encoded, nil
 }

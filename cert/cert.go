@@ -284,6 +284,21 @@ func (cm *CertManager) GetCAInstallStatus() CAInstallStatus {
 	return status
 }
 
+func (cm *CertManager) InstallCA() error {
+	if cm.caPath == "" {
+		return fmt.Errorf("CA certificate path is empty")
+	}
+
+	// Use certutil to install to CurrentUser Root store. 
+	// This will pop up a standard Windows security warning.
+	err := runHiddenCommand("certutil", "-user", "-addstore", "root", cm.caPath)
+	if err != nil {
+		return fmt.Errorf("failed to install CA certificate: %w", err)
+	}
+
+	fmt.Println("[Cert] CA certificate installed successfully to CurrentUser Root store")
+	return nil
+}
 func (cm *CertManager) OpenCAFile() error {
 	return startHiddenCommand("cmd", "/c", "start", "", cm.caPath)
 }

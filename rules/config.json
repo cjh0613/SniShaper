@@ -1,0 +1,2721 @@
+{
+  "listen_port": "8080",
+  "server_host": "",
+  "server_auth": "",
+  "site_groups": [
+    {
+      "id": "linux-do",
+      "name": "linux.do",
+      "website": "linux.do",
+      "domains": [
+        "linux.do"
+      ],
+      "mode": "mitm",
+      "upstream": "162.159.44.199:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670668-1",
+      "name": "account-api.proton.me",
+      "website": "proton",
+      "domains": [
+        "account-api.proton.me"
+      ],
+      "mode": "mitm",
+      "upstream": "185.70.42.20:443",
+      "sni_fake": "account-api-proton-me.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-2",
+      "name": "account.proton.me",
+      "website": "proton",
+      "domains": [
+        "account.proton.me"
+      ],
+      "mode": "mitm",
+      "upstream": "185.70.42.36:443",
+      "sni_fake": "account-proton-me.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-3",
+      "name": "amazon.co.jp",
+      "website": "amazon",
+      "domains": [
+        "amazon.co.jp"
+      ],
+      "mode": "mitm",
+      "upstream": "18.66.145.15:443",
+      "sni_fake": "amazon.com",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-5",
+      "name": "android.com",
+      "website": "android",
+      "domains": [
+        "android.com",
+        "gmail.com"
+      ],
+      "mode": "mitm",
+      "upstream": "34.49.133.3:443",
+      "sni_fake": "g.cn",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-6",
+      "name": "api.bbc.co.uk",
+      "website": "bbc",
+      "domains": [
+        "api.bbc.co.uk",
+        "api.bbci.co.uk",
+        "bbc.co.uk",
+        "bbci.co.uk",
+        "files.bbci.co.uk",
+        "live.bbc.co.uk",
+        "static.bbci.co.uk"
+      ],
+      "mode": "mitm",
+      "upstream": "23.77.21.232:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-7",
+      "name": "api.bbc.com",
+      "website": "bbc",
+      "domains": [
+        "api.bbc.com",
+        "bbc.com"
+      ],
+      "mode": "mitm",
+      "upstream": "146.75.36.81:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-8",
+      "name": "api.e-hentai.org",
+      "website": "e-hentai",
+      "domains": [
+        "api.e-hentai.org"
+      ],
+      "mode": "mitm",
+      "upstream": "5.79.104.110:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-9",
+      "name": "api.fanbox.cc",
+      "website": "fanbox",
+      "domains": [
+        "api.fanbox.cc"
+      ],
+      "mode": "mitm",
+      "upstream": "104.18.41.140:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-10",
+      "name": "api.github.com",
+      "website": "github",
+      "domains": [
+        "api.github.com",
+        "lfs.github.com"
+      ],
+      "mode": "mitm",
+      "upstream": "20.205.243.168:443,20.27.177.116:443,20.200.245.245:443",
+      "sni_fake": "api-github-com.mapped",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-11",
+      "name": "api.mega.co.nz",
+      "website": "mega",
+      "domains": [
+        "api.mega.co.nz"
+      ],
+      "mode": "mitm",
+      "upstream": "66.203.125.15:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-12",
+      "name": "apkmirror.com",
+      "website": "apkmirror",
+      "domains": [
+        "apkmirror.com"
+      ],
+      "mode": "mitm",
+      "upstream": "104.17.67.215:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-13",
+      "name": "archiveofourown.org",
+      "website": "archiveofourown",
+      "domains": [
+        "archiveofourown.org"
+      ],
+      "mode": "mitm",
+      "upstream": "104.20.9.2:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-14",
+      "name": "assets.twitch.tv",
+      "website": "twitch",
+      "domains": [
+        "assets.twitch.tv",
+        "irc-ws.chat.twitch.tv",
+        "panels.twitch.tv",
+        "passport.twitch.tv"
+      ],
+      "mode": "mitm",
+      "upstream": "151.101.194.167:443",
+      "sni_fake": "",
+      "sni_policy": "none",
+      "alpn_policy": "h2_h1",
+      "utls_policy": "on",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-15",
+      "name": "audiomack.com",
+      "website": "audiomack",
+      "domains": [
+        "audiomack.com",
+        "prod.us-east-1.aws.audiomack.com"
+      ],
+      "mode": "mitm",
+      "upstream": "3.167.200.113:443",
+      "sni_fake": "",
+      "sni_policy": "none",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-16",
+      "name": "aurora-1.web.telegram.org",
+      "website": "telegram",
+      "domains": [
+        "aurora-1.web.telegram.org",
+        "aurora.web.telegram.org",
+        "pluto-1.web.telegram.org",
+        "pluto.web.telegram.org"
+      ],
+      "mode": "mitm",
+      "upstream": "[2001:b28:f23d:8007::805:531]:443",
+      "sni_fake": "g.cn",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "alpn_policy": "h1_only",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-17",
+      "name": "business.whatsapp.com",
+      "website": "whatsapp",
+      "domains": [
+        "business.whatsapp.com",
+        "facebook.com",
+        "fbcdn.net"
+      ],
+      "mode": "mitm",
+      "upstream": "157.240.22.169:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-18",
+      "name": "calendar.proton.me",
+      "website": "proton",
+      "domains": [
+        "calendar.proton.me"
+      ],
+      "mode": "mitm",
+      "upstream": "185.70.42.39:443",
+      "sni_fake": "calendar-proton-me.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-20",
+      "name": "cdn.jsdelivr.net",
+      "website": "jsdelivr",
+      "domains": [
+        "cdn.jsdelivr.net",
+        "jsdelivr.net"
+      ],
+      "mode": "mitm",
+      "upstream": "151.101.65.229:443",
+      "sni_fake": "cdn-jsdelivr-net.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-21",
+      "name": "cdn1.cdn-telegram.org",
+      "website": "cdn-telegram",
+      "domains": [
+        "cdn1.cdn-telegram.org"
+      ],
+      "mode": "mitm",
+      "upstream": "34.111.15.3:443",
+      "sni_fake": "g.cn",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "alpn_policy": "h1_only",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-22",
+      "name": "cdn4.cdn-telegram.org",
+      "website": "cdn-telegram",
+      "domains": [
+        "cdn4.cdn-telegram.org"
+      ],
+      "mode": "mitm",
+      "upstream": "34.111.35.152:443",
+      "sni_fake": "g.cn",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "alpn_policy": "h1_only",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-23",
+      "name": "cdn5.cdn-telegram.org",
+      "website": "cdn-telegram",
+      "domains": [
+        "cdn5.cdn-telegram.org"
+      ],
+      "mode": "mitm",
+      "upstream": "34.111.108.175:443",
+      "sni_fake": "g.cn",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "alpn_policy": "h1_only",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-24",
+      "name": "cdninstagram.com",
+      "website": "cdninstagram",
+      "domains": [
+        "cdninstagram.com",
+        "ig.me",
+        "instagr.am",
+        "instagram.com",
+        "static.cdninstagram.com"
+      ],
+      "mode": "mitm",
+      "upstream": "157.240.236.174:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-25",
+      "name": "central.github.com",
+      "website": "github",
+      "domains": [
+        "central.github.com",
+        "classroom.github.com",
+        "collector.github.com",
+        "education.github.com",
+        "enterprise.github.com"
+      ],
+      "mode": "mitm",
+      "upstream": "140.82.112.21:443,140.82.112.22:443,140.82.113.21:443,140.82.113.22:443,140.82.114.21:443,140.82.114.22:443",
+      "sni_fake": "centr.map",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-26",
+      "name": "codeload.github.com",
+      "website": "github",
+      "domains": [
+        "codeload.github.com"
+      ],
+      "mode": "mitm",
+      "upstream": "20.205.243.165:443,20.27.177.114:443,20.200.245.246:443",
+      "sni_fake": "codeload-github-com.mapped",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-27",
+      "name": "community.github.com",
+      "website": "github",
+      "domains": [
+        "community.github.com",
+        "copilot.github.com",
+        "redirect.github.com",
+        "services.github.com",
+        "collector.github.com"
+      ],
+      "mode": "mitm",
+      "upstream": "140.82.112.17:443,140.82.113.17:443,140.82.114.17:443,140.82.112.18:443,140.82.113.18:443,140.82.114.18:443",
+      "sni_fake": "community-github-com.mapped",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-29",
+      "name": "dailymotion.com",
+      "website": "dailymotion",
+      "domains": [
+        "dailymotion.com"
+      ],
+      "mode": "mitm",
+      "upstream": "34.84.14.157:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-30",
+      "name": "dl.dropboxusercontent.com",
+      "website": "dropboxusercontent",
+      "domains": [
+        "dl.dropboxusercontent.com",
+        "previews.dropboxusercontent.com"
+      ],
+      "mode": "mitm",
+      "upstream": "162.125.1.15:443,162.125.2.15:443,162.125.13.15:443,162.125.8.15:443,162.125.69.15:443,162.125.64.15:443,162.125.68.15:443,162.125.71.15:443,162.125.72.15:443,162.125.65.15:443,162.125.81.15:443,162.125.80.15:443,162.125.85.15:443",
+      "sni_fake": "dl-dropboxusercontent-com",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-31",
+      "name": "dmads.dailymotion.com",
+      "website": "dailymotion",
+      "domains": [
+        "dmads.dailymotion.com"
+      ],
+      "mode": "mitm",
+      "upstream": "65.8.161.92:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-32",
+      "name": "docs.github.com",
+      "website": "github",
+      "domains": [
+        "docs.github.com",
+        "githubassets.com",
+        "githubusercontent.com",
+        "github.io"
+      ],
+      "mode": "mitm",
+      "upstream": "185.199.109.154:443,185.199.108.154:443,185.199.110.154:443,185.199.111.154:443",
+      "sni_fake": "docs-github-com.mapped",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-33",
+      "name": "download.tails.net",
+      "website": "tails",
+      "domains": [
+        "download.tails.net"
+      ],
+      "mode": "mitm",
+      "upstream": "204.13.164.63:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-34",
+      "name": "drive.proton.me",
+      "website": "proton",
+      "domains": [
+        "drive.proton.me"
+      ],
+      "mode": "mitm",
+      "upstream": "185.70.42.40:443",
+      "sni_fake": "drive-proton-me.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-35",
+      "name": "duckduckgo.com",
+      "website": "duckduckgo",
+      "domains": [
+        "duckduckgo.com"
+      ],
+      "mode": "mitm",
+      "upstream": "20.43.161.105:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-36",
+      "name": "e-hentai.org",
+      "website": "e-hentai",
+      "domains": [
+        "e-hentai.org"
+      ],
+      "mode": "mitm",
+      "upstream": "172.66.132.196:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-37",
+      "name": "ehgt.org",
+      "website": "ehgt",
+      "domains": [
+        "ehgt.org"
+      ],
+      "mode": "mitm",
+      "upstream": "89.39.106.43:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-38",
+      "name": "et.nytimes.com",
+      "website": "nytimes",
+      "domains": [
+        "et.nytimes.com",
+        "nyt.com",
+        "nytimes.com"
+      ],
+      "mode": "mitm",
+      "upstream": "146.75.117.164:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-39",
+      "name": "etsy.com",
+      "website": "etsy",
+      "domains": [
+        "etsy.com"
+      ],
+      "mode": "mitm",
+      "upstream": "151.101.193.224:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-40",
+      "name": "exhentai.org",
+      "website": "exhentai",
+      "domains": [
+        "exhentai.org"
+      ],
+      "mode": "mitm",
+      "upstream": "178.175.132.22:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-41",
+      "name": "f-droid.org",
+      "website": "f-droid",
+      "domains": [
+        "f-droid.org"
+      ],
+      "mode": "mitm",
+      "upstream": "37.218.243.72:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-42",
+      "name": "fanbox.cc",
+      "website": "fanbox",
+      "domains": [
+        "fanbox.cc"
+      ],
+      "mode": "mitm",
+      "upstream": "104.18.41.140:443",
+      "sni_fake": "",
+      "sni_policy": "none",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-pixiv-001",
+      "name": "pixiv.net",
+      "website": "pixiv",
+      "domains": [
+        "pixiv.net",
+        "www.pixiv.net",
+        "app.pixiv.net",
+        "oauth.secure.pixiv.net",
+        "pixiv.pximg.net"
+      ],
+      "mode": "mitm",
+      "upstream": "210.140.139.152:443",
+      "sni_fake": "pixivision.net",
+      "sni_policy": "none",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-pixiv-002",
+      "name": "i.pximg.net",
+      "website": "pixiv",
+      "domains": [
+        "i.pximg.net",
+        "s.pximg.net",
+        "img-works.pximg.net"
+      ],
+      "mode": "mitm",
+      "upstream": "210.140.139.135:443",
+      "sni_fake": "pixivision.net",
+      "sni_policy": "none",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-pixiv-003",
+      "name": "a.pixiv.org",
+      "website": "pixiv",
+      "domains": [
+        "a.pixiv.org",
+        "d.pixiv.org"
+      ],
+      "mode": "mitm",
+      "upstream": "210.140.139.183:443",
+      "sni_fake": "pixivision.net",
+      "sni_policy": "none",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-pixiv-004",
+      "name": "lc-event.pixiv.net",
+      "website": "pixiv",
+      "domains": [
+        "lc-event.pixiv.net"
+      ],
+      "mode": "mitm",
+      "upstream": "210.140.139.185:443",
+      "sni_fake": "pixivision.net",
+      "sni_policy": "none",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-43",
+      "name": "flickr.com",
+      "website": "flickr",
+      "domains": [
+        "flickr.com"
+      ],
+      "mode": "mitm",
+      "upstream": "13.33.142.102:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-44",
+      "name": "flora-1.web.telegram.org",
+      "website": "telegram",
+      "domains": [
+        "flora-1.web.telegram.org"
+      ],
+      "mode": "mitm",
+      "upstream": "149.154.171.236:443",
+      "sni_fake": "g.cn",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "alpn_policy": "h1_only",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-45",
+      "name": "flora.web.telegram.org",
+      "website": "telegram",
+      "domains": [
+        "flora.web.telegram.org",
+        "web.telegram.org"
+      ],
+      "mode": "mitm",
+      "upstream": "149.154.170.200:443",
+      "sni_fake": "g.cn",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "alpn_policy": "h1_only",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-46",
+      "name": "forum.f-droid.org",
+      "website": "f-droid",
+      "domains": [
+        "forum.f-droid.org"
+      ],
+      "mode": "mitm",
+      "upstream": "37.218.242.53:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-47",
+      "name": "forums.e-hentai.org",
+      "website": "e-hentai",
+      "domains": [
+        "forums.e-hentai.org"
+      ],
+      "mode": "mitm",
+      "upstream": "172.66.140.62:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-48",
+      "name": "gdata.youtube.com",
+      "website": "youtube",
+      "domains": [
+        "gdata.youtube.com",
+        "ggpht.com",
+        "upload.youtube.com",
+        "uploads.stage.gdata.youtube.com",
+        "usercontent.youtube.com",
+        "youtu.be",
+        "youtube-nocookie.com",
+        "youtube.com",
+        "ytimg.com"
+      ],
+      "mode": "server",
+      "upstream": "",
+      "sni_fake": "",
+      "connect_policy": "server",
+      "sni_policy": "none",
+      "alpn_policy": "h2_h1",
+      "utls_policy": "on",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "sg-1771319670672-49",
+      "name": "gelbooru.com",
+      "website": "gelbooru",
+      "domains": [
+        "gelbooru.com"
+      ],
+      "mode": "mitm",
+      "upstream": "108.181.143.72:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-50",
+      "name": "gemini.google.com",
+      "website": "google",
+      "domains": [
+        "gemini.google.com"
+      ],
+      "mode": "mitm",
+      "upstream": "47.102.115.14:443",
+      "sni_fake": "g.cn",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-51",
+      "name": "geo.dailymotion.com",
+      "website": "dailymotion",
+      "domains": [
+        "geo.dailymotion.com",
+        "geo.player.dailymotion.com"
+      ],
+      "mode": "mitm",
+      "upstream": "35.82.199.74:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-52",
+      "name": "gist.github.com",
+      "website": "github",
+      "domains": [
+        "gist.github.com",
+        "github.com",
+        "www.github.com"
+      ],
+      "mode": "mitm",
+      "upstream": "20.205.243.166:443,20.27.177.113:443,20.200.245.247:443",
+      "sni_fake": "gist-github-com.mapped",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-53",
+      "name": "gql.twitch.tv",
+      "website": "twitch",
+      "domains": [
+        "gql.twitch.tv",
+        "m.twitch.tv",
+        "twitch.tv",
+        "www.twitch.tv"
+      ],
+      "mode": "mitm",
+      "upstream": "151.101.194.167:443",
+      "sni_fake": "",
+      "sni_policy": "none",
+      "alpn_policy": "h1_only",
+      "utls_policy": "on",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-54",
+      "name": "graphql.api.dailymotion.com",
+      "website": "dailymotion",
+      "domains": [
+        "graphql.api.dailymotion.com"
+      ],
+      "mode": "mitm",
+      "upstream": "34.84.14.157:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-55",
+      "name": "gravatar.com",
+      "website": "gravatar",
+      "domains": [
+        "gravatar.com"
+      ],
+      "mode": "mitm",
+      "upstream": "192.0.80.240:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-56",
+      "name": "greasyfork.org",
+      "website": "greasyfork",
+      "domains": [
+        "greasyfork.org"
+      ],
+      "mode": "mitm",
+      "upstream": "96.126.98.220:443",
+      "sni_fake": "g.cn",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-57",
+      "name": "gstatic.com",
+      "website": "google",
+      "domains": [
+        "android.com",
+        "gdata.youtube.com",
+        "gemini.google.com",
+        "ggpht.com",
+        "gmail.com",
+        "google.com",
+        "google.com.*",
+        "googleapis.com",
+        "youtubei.googleapis.com",
+        "www.googleapis.com",
+        "googleusercontent.com",
+        "*.googleusercontent.com",
+        "gstatic.com",
+        "upload.youtube.com",
+        "uploads.stage.gdata.youtube.com",
+        "usercontent.youtube.com",
+        "youtu.be",
+        "youtube-nocookie.com",
+        "youtube.com",
+        "ytimg.com",
+        "blogger.com"
+      ],
+      "mode": "mitm",
+      "upstream": "8.137.102.117:443",
+      "sni_fake": "g.cn",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-58",
+      "name": "hub.docker.com",
+      "website": "docker",
+      "domains": [
+        "hub.docker.com"
+      ],
+      "mode": "mitm",
+      "upstream": "54.163.142.90:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-59",
+      "name": "identity.flickr.com",
+      "website": "flickr",
+      "domains": [
+        "identity.flickr.com"
+      ],
+      "mode": "mitm",
+      "upstream": "3.209.240.130:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-60",
+      "name": "images.prismic.io",
+      "website": "prismic",
+      "domains": [
+        "images.prismic.io"
+      ],
+      "mode": "mitm",
+      "upstream": "151.101.78.208:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-61",
+      "name": "imgur.com",
+      "website": "imgur",
+      "domains": [
+        "imgur.com"
+      ],
+      "mode": "mitm",
+      "upstream": "199.232.196.193:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-62",
+      "name": "kws1-1.web.telegram.org",
+      "website": "telegram",
+      "domains": [
+        "kws1-1.web.telegram.org",
+        "kws1.web.telegram.org",
+        "kws3-1.web.telegram.org",
+        "kws3.web.telegram.org",
+        "kws5-1.web.telegram.org",
+        "kws5.web.telegram.org"
+      ],
+      "mode": "mitm",
+      "upstream": "[2001:b28:f23d:8007::805:531]:443",
+      "sni_fake": "g.cn",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "alpn_policy": "h1_only",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-63",
+      "name": "kws2-1.web.telegram.org",
+      "website": "telegram",
+      "domains": [
+        "kws2-1.web.telegram.org",
+        "kws2.web.telegram.org",
+        "kws4-1.web.telegram.org",
+        "kws4.web.telegram.org",
+        "venus-1.web.telegram.org",
+        "venus.web.telegram.org",
+        "vesta-1.web.telegram.org",
+        "vesta.web.telegram.org"
+      ],
+      "mode": "mitm",
+      "upstream": "[2001:67c:4e8:f004::9]:443",
+      "sni_fake": "g.cn",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "alpn_policy": "h1_only",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-65",
+      "name": "wikipedia",
+      "website": "mediawiki",
+      "domains": [
+        "m.mediawiki.org",
+        "m.wikibooks.org",
+        "m.wikidata.org",
+        "m.wikifunctions.org",
+        "m.wikimedia.org",
+        "m.wikinews.org",
+        "m.wikipedia.org",
+        "m.wikiquote.org",
+        "m.wikiversity.org",
+        "m.wikivoyage.org",
+        "m.wiktionary.org",
+        "mediawiki.org",
+        "wikibooks.org",
+        "wikidata.org",
+        "wikifunctions.org",
+        "wikimedia.org",
+        "wikinews.org",
+        "wikipedia.org",
+        "wikiquote.org",
+        "wikisource.org",
+        "wikiversity.org",
+        "wikivoyage.org",
+        "wiktionary.org"
+      ],
+      "mode": "mitm",
+      "upstream": "208.80.153.224:443,185.15.59.224:443,185.15.58.224:443",
+      "sni_fake": "wikipedia-org",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-66",
+      "name": "mail.proton.me",
+      "website": "proton",
+      "domains": [
+        "mail.proton.me"
+      ],
+      "mode": "mitm",
+      "upstream": "185.70.42.37:443",
+      "sni_fake": "mail-proton-me.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-67",
+      "name": "mega.io",
+      "website": "mega",
+      "domains": [
+        "mega.io"
+      ],
+      "mode": "mitm",
+      "upstream": "66.203.127.11:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-68",
+      "name": "mega.nz",
+      "website": "mega",
+      "domains": [
+        "mega.nz"
+      ],
+      "mode": "mitm",
+      "upstream": "31.216.144.5:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-69",
+      "name": "ms.ok.ru",
+      "website": "odnoklassniki",
+      "domains": [
+        "ms.ok.ru",
+        "ok.ru"
+      ],
+      "mode": "mitm",
+      "upstream": "5.61.23.11:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-70",
+      "name": "nyaa.si",
+      "website": "nyaa",
+      "domains": [
+        "nyaa.si"
+      ],
+      "mode": "mitm",
+      "upstream": "186.2.163.20:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-71",
+      "name": "okx.com",
+      "website": "okx",
+      "domains": [
+        "okx.com"
+      ],
+      "mode": "mitm",
+      "upstream": "8.212.101.92:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-72",
+      "name": "onedrive.live.com",
+      "website": "live",
+      "domains": [
+        "onedrive.live.com"
+      ],
+      "mode": "mitm",
+      "upstream": "13.107.42.13:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-73",
+      "name": "pass.proton.me",
+      "website": "proton",
+      "domains": [
+        "pass.proton.me"
+      ],
+      "mode": "mitm",
+      "upstream": "185.70.42.63:443",
+      "sni_fake": "pass-proton-me.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-74",
+      "name": "patreon.com",
+      "website": "patreon",
+      "domains": [
+        "patreon.com"
+      ],
+      "mode": "mitm",
+      "upstream": "104.16.25.14:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-75",
+      "name": "patreonusercontent.com",
+      "website": "patreonusercontent",
+      "domains": [
+        "patreonusercontent.com"
+      ],
+      "mode": "mitm",
+      "upstream": "104.18.70.106:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-76",
+      "name": "pinimg.com",
+      "website": "pinimg",
+      "domains": [
+        "pinimg.com",
+        "pinterest.com"
+      ],
+      "mode": "mitm",
+      "upstream": "151.101.0.84:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-79",
+      "name": "prod-publishers-content.s3.us-east-1.amazonaws.com",
+      "website": "amazonaws",
+      "domains": [
+        "prod-publishers-content.s3.us-east-1.amazonaws.com"
+      ],
+      "mode": "mitm",
+      "upstream": "52.217.230.98:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-80",
+      "name": "proton.me",
+      "website": "proton",
+      "domains": [
+        "proton.me"
+      ],
+      "mode": "mitm",
+      "upstream": "185.70.42.45:443",
+      "sni_fake": "proton-me.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-81",
+      "name": "pximg.net",
+      "website": "pximg",
+      "domains": [
+        "pximg.net"
+      ],
+      "mode": "mitm",
+      "upstream": "210.140.139.135:443",
+      "sni_fake": "pixivision.net",
+      "sni_policy": "none",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-82",
+      "name": "quora.com",
+      "website": "quora",
+      "domains": [
+        "quora.com",
+        "tch.quora.com",
+        "www.quora.com",
+        "www.tch.quora.com"
+      ],
+      "mode": "mitm",
+      "upstream": "18.233.40.74:443",
+      "sni_fake": "fs.quoracdn.net",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-83",
+      "name": "redd.it",
+      "website": "redd",
+      "domains": [
+        "redd.it",
+        "reddit.com",
+        "redditmedia.com",
+        "redditstatic.com"
+      ],
+      "mode": "mitm",
+      "upstream": "146.75.33.140:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-84",
+      "name": "rfi.fr",
+      "website": "rfi",
+      "domains": [
+        "rfi.fr"
+      ],
+      "mode": "mitm",
+      "upstream": "118.214.247.61:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-85",
+      "name": "rumble.com",
+      "website": "rumble",
+      "domains": [
+        "rumble.com"
+      ],
+      "mode": "mitm",
+      "upstream": "205.220.231.24:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-86",
+      "name": "rutube.ru",
+      "website": "rutube",
+      "domains": [
+        "rutube.ru",
+        "www.rutube.ru"
+      ],
+      "mode": "mitm",
+      "upstream": "178.248.233.148:443",
+      "sni_fake": "rutub.io",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-steam-store-1",
+      "name": "store.steampowered.com",
+      "website": "steam",
+      "domains": [
+        "store.steampowered.com"
+      ],
+      "mode": "transparent",
+      "upstream": "184.85.230.119:443",
+      "sni_fake": "",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-89",
+      "name": "sukebei.nyaa.si",
+      "website": "nyaa",
+      "domains": [
+        "sukebei.nyaa.si"
+      ],
+      "mode": "mitm",
+      "upstream": "198.251.89.38:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-91",
+      "name": "t.me",
+      "website": "telegram",
+      "domains": [
+        "t.me",
+        "telegram.me",
+        "telegram.org",
+        "telesco.pe",
+        "tg.dev"
+      ],
+      "mode": "mitm",
+      "upstream": "136.244.94.246:443",
+      "sni_fake": "g.cn",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "alpn_policy": "h1_only",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-92",
+      "name": "thetvdb.com",
+      "website": "thetvdb",
+      "domains": [
+        "thetvdb.com"
+      ],
+      "mode": "mitm",
+      "upstream": "13.35.222.88:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-93",
+      "name": "twimg.com",
+      "website": "twimg",
+      "domains": [
+        "twimg.com"
+      ],
+      "mode": "mitm",
+      "upstream": "146.75.72.157:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-94",
+      "name": "upld.e-hentai.org",
+      "website": "e-hentai",
+      "domains": [
+        "upld.e-hentai.org",
+        "upload.e-hentai.org"
+      ],
+      "mode": "mitm",
+      "upstream": "95.211.208.236:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-95",
+      "name": "upload.wikimedia.org",
+      "website": "wikimedia",
+      "domains": [
+        "upload.wikimedia.org"
+      ],
+      "mode": "mitm",
+      "upstream": "208.80.153.240:443,208.80.154.240:443,185.15.59.240:443",
+      "sni_fake": "upload-wikipedia-org",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670672-97",
+      "name": "vercel.app",
+      "website": "vercel",
+      "domains": [
+        "vercel.app"
+      ],
+      "mode": "mitm",
+      "upstream": "64.29.17.193:443",
+      "sni_fake": "vercel.com",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-98",
+      "name": "whatsapp.com",
+      "website": "whatsapp",
+      "domains": [
+        "whatsapp.com",
+        "whatsapp.net"
+      ],
+      "mode": "mitm",
+      "upstream": "157.240.225.60:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-99",
+      "name": "xnxx.com",
+      "website": "xnxx",
+      "domains": [
+        "xnxx.com"
+      ],
+      "mode": "mitm",
+      "upstream": "152.233.100.3:443",
+      "sni_fake": "xm.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-100",
+      "name": "xvideos.com",
+      "website": "xvideos",
+      "domains": [
+        "xvideos.com",
+        "www.xvideos.com"
+      ],
+      "mode": "mitm",
+      "upstream": "185.88.181.2:443,185.88.181.3:443,185.88.181.4:443,185.88.181.5:443,185.88.181.6:443,185.88.181.7:443,185.88.181.8:443,185.88.181.9:443,185.88.181.10:443,185.88.181.11:443",
+      "sni_fake": "",
+      "sni_policy": "none",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "1771408944930",
+      "name": "www.dropbox.com",
+      "website": "dropbox",
+      "domains": [
+        "www.dropbox.com"
+      ],
+      "mode": "mitm",
+      "upstream": "162.125.80.18:443",
+      "sni_fake": "www-dropbox-com.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "1771408944931",
+      "name": "bolt.dropbox.com",
+      "website": "dropbox",
+      "domains": [
+        "bolt.dropbox.com"
+      ],
+      "mode": "mitm",
+      "upstream": "162.125.40.1:443",
+      "sni_fake": "bolt-dropbox-com.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "1771408944932",
+      "name": "d.dropbox.com",
+      "website": "dropbox",
+      "domains": [
+        "d.dropbox.com"
+      ],
+      "mode": "mitm",
+      "upstream": "162.125.6.20:443",
+      "sni_fake": "d-dropbox-com.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "1771408944933",
+      "name": "previews.dropbox.com",
+      "website": "dropbox",
+      "domains": [
+        "previews.dropbox.com"
+      ],
+      "mode": "mitm",
+      "upstream": "162.125.83.16:443",
+      "sni_fake": "previews-dropbox-com.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "1771408944934",
+      "name": "beacon.dropbox.com",
+      "website": "dropbox",
+      "domains": [
+        "beacon.dropbox.com"
+      ],
+      "mode": "mitm",
+      "upstream": "162.125.40.1:443",
+      "sni_fake": "beacon-dropbox-com.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "1771408944935",
+      "name": "thunder.dropbox.com",
+      "website": "dropbox",
+      "domains": [
+        "thunder.dropbox.com"
+      ],
+      "mode": "mitm",
+      "upstream": "162.125.40.1:443",
+      "sni_fake": "thunder-dropbox-com.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "1771408944936",
+      "name": "fp.dropbox.com",
+      "website": "dropbox",
+      "domains": [
+        "fp.dropbox.com"
+      ],
+      "mode": "mitm",
+      "upstream": "18.154.206.82:443",
+      "sni_fake": "fp-dropbox-com.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "1771408944937",
+      "name": "assets.dropbox.com",
+      "website": "dropbox",
+      "domains": [
+        "assets.dropbox.com"
+      ],
+      "mode": "mitm",
+      "upstream": "216.137.39.27:443",
+      "sni_fake": "assets-dropbox-com.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-102",
+      "name": "dropbox.com",
+      "website": "dropbox",
+      "domains": [
+        "dropbox.com"
+      ],
+      "mode": "mitm",
+      "upstream": "162.125.248.18:443",
+      "sni_fake": "dropbox-com.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-103",
+      "name": "external-content.duckduckgo.com",
+      "website": "duckduckgo",
+      "domains": [
+        "external-content.duckduckgo.com"
+      ],
+      "mode": "mitm",
+      "upstream": "52.250.30.213:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-104",
+      "name": "discord.com",
+      "website": "discord",
+      "domains": [
+        "discord.com"
+      ],
+      "mode": "mitm",
+      "upstream": "162.159.128.233:443,162.159.136.232:443,162.159.137.232:443,162.159.138.232:443,162.159.135.232:443",
+      "sni_fake": "discord-com",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-105",
+      "name": "discord.gg",
+      "website": "discord",
+      "domains": [
+        "discord.gg"
+      ],
+      "mode": "mitm",
+      "upstream": "162.159.136.234:443,162.159.134.234:443,162.159.130.234:443,162.159.135.234:443,162.159.133.234:443",
+      "sni_fake": "discord-gg",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-106",
+      "name": "discordapp.com",
+      "website": "discord",
+      "domains": [
+        "discordapp.com"
+      ],
+      "mode": "mitm",
+      "upstream": "162.159.135.233:443,162.159.130.233:443,162.159.133.233:443,162.159.134.233:443,162.159.129.233:443",
+      "sni_fake": "discordapp-com",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-107",
+      "name": "discordapp.net",
+      "website": "discord",
+      "domains": [
+        "discordapp.net"
+      ],
+      "mode": "mitm",
+      "upstream": "162.159.129.232:443,162.159.134.232:443,162.159.130.232:443,162.159.128.232:443,162.159.133.232:443",
+      "sni_fake": "media-discordapp-net",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-108",
+      "name": "tails.net",
+      "website": "tails",
+      "domains": [
+        "tails.net"
+      ],
+      "mode": "mitm",
+      "upstream": "94.142.244.34:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-109",
+      "name": "zws2.web.telegram.org",
+      "website": "telegram",
+      "domains": [
+        "zws2.web.telegram.org",
+        "zws4.web.telegram.org"
+      ],
+      "mode": "mitm",
+      "upstream": "136.244.94.246:443",
+      "sni_fake": "g.cn",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "alpn_policy": "h1_only",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-110",
+      "name": "zws1.web.telegram.org",
+      "website": "telegram",
+      "domains": [
+        "zws1.web.telegram.org",
+        "zws3.web.telegram.org"
+      ],
+      "mode": "mitm",
+      "upstream": "149.154.174.200:443",
+      "sni_fake": "g.cn",
+      "connect_policy": "mitm",
+      "sni_policy": "fake",
+      "alpn_policy": "h1_only",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-111",
+      "name": "googlevideo.com",
+      "website": "google",
+      "domains": [
+        "googlevideo.com",
+        "*.googlevideo.com"
+      ],
+      "mode": "server",
+      "upstream": "",
+      "sni_fake": "",
+      "connect_policy": "server",
+      "sni_policy": "none",
+      "alpn_policy": "h2_h1",
+      "utls_policy": "on",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1771318798329720400",
+      "name": "google.com",
+      "website": "google",
+      "domains": [
+        "google.com",
+        "google.com.*",
+        "gstatic.com",
+        "googleusercontent.com",
+        "*.googleusercontent.com",
+        "antigravity.google"
+      ],
+      "mode": "transparent",
+      "upstream": "8.137.102.117:443",
+      "sni_fake": "g.cn",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-113",
+      "name": "gemini.google.com",
+      "website": "google",
+      "domains": [
+        "gemini.google.com"
+      ],
+      "mode": "transparent",
+      "upstream": "47.102.115.14:443",
+      "sni_fake": "g.cn",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771319670673-114",
+      "name": "youtube.com",
+      "website": "google",
+      "domains": [
+        "gdata.youtube.com",
+        "ggpht.com",
+        "upload.youtube.com",
+        "uploads.stage.gdata.youtube.com",
+        "usercontent.youtube.com",
+        "youtu.be",
+        "youtube-nocookie.com",
+        "youtube.com",
+        "ytimg.com"
+      ],
+      "mode": "server",
+      "upstream": "",
+      "sni_fake": "",
+      "connect_policy": "server",
+      "sni_policy": "none",
+      "alpn_policy": "h2_h1",
+      "utls_policy": "on",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "sg-1771319670676-mitm-google",
+      "name": "google.com",
+      "website": "google",
+      "domains": [
+        "google.com",
+        "google.com.*",
+        "googleapis.com",
+        "youtubei.googleapis.com",
+        "www.googleapis.com",
+        "googleusercontent.com",
+        "lh3.googleusercontent.com",
+        "antigravity.google"
+      ],
+      "mode": "mitm",
+      "upstream": "8.137.102.117:443",
+      "sni_fake": "g.cn",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771320583113-mitm-lh3-googleusercontent",
+      "name": "lh3.googleusercontent.com",
+      "website": "google",
+      "domains": [
+        "lh3.googleusercontent.com"
+      ],
+      "mode": "mitm",
+      "upstream": "8.137.102.117:443",
+      "sni_fake": "g.cn",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-1771320583118-transparent-lh3-googleusercontent",
+      "name": "lh3.googleusercontent.com",
+      "website": "google",
+      "domains": [
+        "lh3.googleusercontent.com"
+      ],
+      "mode": "transparent",
+      "upstream": "8.137.102.117:443",
+      "sni_fake": "g.cn",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-20260218162653143-gvt1-transparent",
+      "name": "gvt1.com",
+      "website": "google",
+      "domains": [
+        "gvt1.com",
+        "*.gvt1.com"
+      ],
+      "mode": "server",
+      "upstream": "",
+      "sni_fake": "",
+      "connect_policy": "server",
+      "sni_policy": "none",
+      "alpn_policy": "h2_h1",
+      "utls_policy": "on",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1771487404518161800",
+      "name": "sinyalee.com",
+      "website": "sinyalee",
+      "domains": [
+        "sinyalee.com"
+      ],
+      "mode": "mitm",
+      "upstream": "",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "utls_policy": "auto",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1771487490110047700",
+      "name": "gfw.report",
+      "website": "gfw",
+      "domains": [
+        "gfw.report"
+      ],
+      "mode": "mitm",
+      "upstream": "",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "utls_policy": "auto",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1771493426332470400",
+      "name": "x.com",
+      "website": "x",
+      "domains": [
+        "x.com",
+        "t.co",
+        "twitter.com"
+      ],
+      "mode": "mitm",
+      "upstream": "",
+      "sni_fake": "",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1771497628324832100",
+      "name": "pincong.rocks",
+      "website": "pincong",
+      "domains": [
+        "pincong.rocks"
+      ],
+      "mode": "mitm",
+      "upstream": "",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "utls_policy": "auto",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1771760216031274000",
+      "name": "Server: grok.com",
+      "website": "server-batch",
+      "domains": [
+        "grok.com"
+      ],
+      "mode": "server",
+      "upstream": "",
+      "sni_fake": "",
+      "utls_policy": "on",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1771760581149971100",
+      "name": "Server: arena.ai",
+      "website": "server-batch",
+      "domains": [
+        "arena.ai"
+      ],
+      "mode": "server",
+      "upstream": "",
+      "sni_fake": "",
+      "utls_policy": "on",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1772874326617342400",
+      "name": "itch.io",
+      "website": "itch",
+      "domains": [
+        "itch.io"
+      ],
+      "mode": "mitm",
+      "upstream": "",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "utls_policy": "auto",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1772957139849754000",
+      "name": "v2ex.com",
+      "website": "v2ex",
+      "domains": [
+        "v2ex.com"
+      ],
+      "mode": "mitm",
+      "upstream": "",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "utls_policy": "auto",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1773039435005990500",
+      "name": "cloudflare.com",
+      "website": "cloudflare",
+      "domains": [
+        "cloudflare.com"
+      ],
+      "mode": "mitm",
+      "upstream": "",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "utls_policy": "auto",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1773045366962644100",
+      "name": "z-lib",
+      "website": "z-lib",
+      "domains": [
+        "z-lib.help"
+      ],
+      "mode": "mitm",
+      "upstream": "",
+      "sni_fake": "",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1773045498089020200",
+      "name": "zlib sk",
+      "website": "z-lib",
+      "domains": [
+        "z-library.sk"
+      ],
+      "mode": "mitm",
+      "upstream": "94.231.223.5:443",
+      "sni_fake": "z-library-sk.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "1773135185399537900",
+      "name": "steam社区",
+      "website": "steam",
+      "domains": [
+        "steamcommunity.com"
+      ],
+      "mode": "mitm",
+      "upstream": "184.24.82.93:443",
+      "sni_fake": "steamcom.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "1773135753390794800",
+      "name": "steam资源",
+      "website": "steam社区",
+      "domains": [
+        "community.steamstatic.com"
+      ],
+      "mode": "mitm",
+      "upstream": "199.232.211.52:443",
+      "sni_fake": "comm.mapped",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "1773135933462451200",
+      "name": "huggingface",
+      "website": "huggingface",
+      "domains": [
+        "cdn-avatars.huggingface.co",
+        "cdn-uploads.huggingface.co",
+        "discuss.huggingface.co",
+        "huggingface.co",
+        "status.huggingface.co"
+      ],
+      "mode": "mitm",
+      "upstream": "3.167.200.113:443",
+      "sni_fake": "",
+      "sni_policy": "none",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "1773137564101408100",
+      "name": "Pornhub",
+      "website": "pornhub",
+      "domains": [
+        "pornhub.com",
+        "www.pornhub.com"
+      ],
+      "mode": "server",
+      "upstream": "",
+      "sni_fake": "",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1773138255645400300",
+      "name": "hcaptcha.com",
+      "website": "hcaptcha",
+      "domains": [
+        "hcaptcha.com"
+      ],
+      "mode": "mitm",
+      "upstream": "",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "utls_policy": "auto",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "1774165664863940200",
+      "name": "substack.com",
+      "website": "substack",
+      "domains": [
+        "substack.com"
+      ],
+      "mode": "mitm",
+      "upstream": "",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "utls_policy": "auto",
+      "enabled": true,
+      "ech_enabled": true,
+      "ech_domain": "crypto.cloudflare.com",
+      "ech_discovery": false,
+      "use_cf_pool": true
+    },
+    {
+      "id": "sg-manual-archive-org",
+      "name": "archive",
+      "website": "archive",
+      "domains": [
+        "archive.org"
+      ],
+      "mode": "tls-rf",
+      "upstream": "207.241.225.120:443",
+      "sni_fake": "",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-manual-web-archive-org",
+      "name": "web.archive.org",
+      "website": "archive",
+      "domains": [
+        "web.archive.org"
+      ],
+      "mode": "tls-rf",
+      "upstream": "207.241.237.3:443",
+      "sni_fake": "",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-manual-uploads-github",
+      "name": "uploads.github.com",
+      "website": "github",
+      "domains": [
+        "uploads.github.com"
+      ],
+      "mode": "mitm",
+      "upstream": "20.207.73.81:443",
+      "sni_fake": "uploads-github-com.mapped",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-manual-alive-github",
+      "name": "alive.github.com",
+      "website": "github",
+      "domains": [
+        "alive.github.com"
+      ],
+      "mode": "mitm",
+      "upstream": "140.82.112.26:443",
+      "sni_fake": "alive-github-com.mapped",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-manual-objects-origin-githubusercontent",
+      "name": "objects-origin.githubusercontent.com",
+      "website": "github",
+      "domains": [
+        "objects-origin.githubusercontent.com"
+      ],
+      "mode": "mitm",
+      "upstream": "140.82.113.22:443",
+      "sni_fake": "objects-origin-githubusercontent-com.mapped",
+      "utls_policy": "off",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-manual-skyapi-onedrive",
+      "name": "skyapi.onedrive.live.com",
+      "website": "live",
+      "domains": [
+        "skyapi.onedrive.live.com"
+      ],
+      "mode": "tls-rf",
+      "upstream": "13.107.42.12:443",
+      "sni_fake": "",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-manual-platform-twitter",
+      "name": "platform.twitter.com",
+      "website": "twitter",
+      "domains": [
+        "platform.twitter.com"
+      ],
+      "mode": "mitm",
+      "upstream": "146.75.120.157:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-manual-abs0-twimg",
+      "name": "abs-0.twimg.com",
+      "website": "twimg",
+      "domains": [
+        "abs-0.twimg.com"
+      ],
+      "mode": "mitm",
+      "upstream": "146.75.48.159:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    },
+    {
+      "id": "sg-manual-video-pscp",
+      "name": "video.pscp.tv",
+      "website": "twitter",
+      "domains": [
+        "video.pscp.tv"
+      ],
+      "mode": "mitm",
+      "upstream": "146.75.34.164:443",
+      "sni_fake": "",
+      "sni_policy": "fake",
+      "enabled": true,
+      "ech_enabled": false,
+      "ech_domain": "",
+      "ech_discovery": false,
+      "use_cf_pool": false
+    }
+  ],
+  "upstreams": [],
+  "cloudflare_config": {
+    "preferred_ips": [
+      "104.18.47.194",
+      "104.17.150.71",
+      "104.17.135.121",
+      "104.18.47.235",
+      "104.17.157.228",
+      "104.17.232.219",
+      "172.67.73.9",
+      "104.26.2.144",
+      "172.67.77.76",
+      "104.17.234.154",
+      "104.17.131.115",
+      "104.26.3.14",
+      "104.17.135.213",
+      "104.17.134.135",
+      "198.41.219.147",
+      "162.159.38.129",
+      "162.159.38.57",
+      "162.159.24.224",
+      "108.162.192.65",
+      "162.159.24.150"
+    ],
+    "doh_url": "",
+    "auto_update": false,
+    "api_key": ""
+  }
+}

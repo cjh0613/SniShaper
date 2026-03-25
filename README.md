@@ -79,8 +79,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build.ps1
 适用场景：
 
 - 不希望安装本地根证书
-- 目标站点对完整 MITM 很敏感
-- 透明模式仍然容易被基于 ClientHello 的检测命中
+- 目标站点对域前置很敏感
 
 注意事项：
 
